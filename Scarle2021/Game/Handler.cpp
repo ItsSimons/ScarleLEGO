@@ -124,7 +124,7 @@ void LEGO::Handler::update()
 				holding_obj->SetPos(current_pos);
 				break;
 			case 2:
-				holding_obj = new LEGOwingRight(d3dDevice, fxFactory, physic_scene, composite_body);
+				holding_obj = new LEGOwing(d3dDevice, fxFactory, physic_scene, composite_body);
 				holding_obj->SetPos(current_pos);
 				break;
 			case 3:
@@ -173,7 +173,7 @@ void LEGO::Handler::update()
 			break;
 		case 2:
 			delete holding_obj;
-			holding_obj = new LEGOwingRight(d3dDevice, fxFactory, physic_scene, composite_body);
+			holding_obj = new LEGOwing(d3dDevice, fxFactory, physic_scene, composite_body);
 			holding_obj->SetPos(current_pos);
 			break;
 		case 3:

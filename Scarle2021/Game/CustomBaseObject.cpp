@@ -370,13 +370,8 @@ void CustomBaseObject::Tick(GameData* _GD)
         //applies them accordingly
         m_pos = Vector3(obj_pos.x, obj_pos.y, obj_pos.z);
         m_rotQuat = Quaternion(obj_rot.x, obj_rot.y, obj_rot.z, obj_rot.w);
-
-        CMOGO::Tick(_GD);
     }
-    else
-    {
-        CMOGO::Tick(_GD);
-    }
+    CMOGO::Tick(_GD);
 }
 
 void CustomBaseObject::Draw(DrawData* _DD)

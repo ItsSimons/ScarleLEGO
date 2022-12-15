@@ -192,9 +192,6 @@
     <ClInclude Include="CustomBaseObject.h">
       <Filter>LEGOComponent\Objects\Base Object</Filter>
     </ClInclude>
-    <ClInclude Include="LEGOwingRight.h">
-      <Filter>LEGOComponent\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="LEGOthruster.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
@@ -205,6 +202,15 @@
       <Filter>LEGOComponent\UserInterface</Filter>
     </ClInclude>
     <ClInclude Include="LEGOwheel.h">
+      <Filter>LEGOComponent\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="LEGOwing.h">
+      <Filter>LEGOComponent\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="LEGOstartingBlock.h">
+      <Filter>LEGOComponent\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="LEGOsteeringWheel.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
   </ItemGroup>

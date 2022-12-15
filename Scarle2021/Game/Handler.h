@@ -8,12 +8,12 @@
 #include "ObjectList.h"
 #include "q3.h"
 
-//Debugghing
+//Lego Headers
 #include <iostream>
 #include "DebugRender.h"
 #include "CustomBaseObject.h"
 #include "LEGOthruster.h"
-#include "LEGOwingRight.h"
+#include "LEGOwing.h"
 #include "LEGOwheel.h"
 #include "LEGOcube.h"
 

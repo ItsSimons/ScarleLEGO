@@ -185,10 +185,12 @@
     <ClInclude Include="Helper.h" />
     <ClInclude Include="ImageGO2D.h" />
     <ClInclude Include="LEGOcube.h" />
+    <ClInclude Include="LEGOstartingBlock.h" />
+    <ClInclude Include="LEGOsteeringWheel.h" />
     <ClInclude Include="LEGOthruster.h" />
     <ClInclude Include="LEGOUserInterface.h" />
     <ClInclude Include="LEGOwheel.h" />
-    <ClInclude Include="LEGOwingRight.h" />
+    <ClInclude Include="LEGOwing.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Loop.h" />
     <ClInclude Include="MarchCubes.h" />
