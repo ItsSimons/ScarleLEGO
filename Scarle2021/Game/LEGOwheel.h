@@ -1,4 +1,3 @@
-
 #pragma once
 #include "CustomBaseObject.h"
 
@@ -6,14 +5,17 @@ class LEGOwheel : public CustomBaseObject
 {
 public:
 	LEGOwheel(ID3D11Device* _pd3dDevice, IEffectFactory* _EF, q3Scene* _physic_scene, q3Body* _composite_body)
-		: CustomBaseObject("wheelLeft", _pd3dDevice, _EF, _physic_scene, _composite_body)
+		: CustomBaseObject("Wheel", _pd3dDevice, _EF, _physic_scene, _composite_body)
 	{
-		m_scale = Vector3{ 13.f, 10.f, 10.f };
-		object_extents = q3Vec3{ 8.0f, 19.0f, 19.0f };
+		m_scale = Vector3{ 5.f, 5.f, 5.f };
+		base_object_extents	= Vector3{ 9.f, 19.f, 19.f };
 
-		base_forces[forward_f] = Vector3(0, 0, 1500);
-		base_forces[backward_f] = Vector3(0, 0, -1500);
+		forces_on_touch = true;
+		
+		base_forces[forward_f] = Vector3(0, 0, 4600);
+		base_forces[backward_f] = Vector3(0, 0, -4600);
 
+		//Turning?
 		//base_forces[leftward_f] = Vector3(2250, 0, 0);
 		//base_forces[rightward_f] = Vector3(-2250, 0, 0);
 		

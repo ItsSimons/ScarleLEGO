@@ -151,17 +151,19 @@
   <ItemGroup>
     <MeshContentTask Include="Bird\BirdModelV1.fbx" />
     <MeshContentTask Include="Cube\cubetto.fbx" />
-    <MeshContentTask Include="Structure Cube\thing.fbx" />
+    <MeshContentTask Include="LEGOmodels\Cube.fbx" />
+    <MeshContentTask Include="LEGOmodels\Platform.fbx" />
+    <MeshContentTask Include="LEGOmodels\StartCube.fbx" />
+    <MeshContentTask Include="LEGOmodels\SteeringWheel.fbx" />
+    <MeshContentTask Include="LEGOmodels\Thruster.fbx" />
+    <MeshContentTask Include="LEGOmodels\Wheel.fbx" />
+    <MeshContentTask Include="LEGOmodels\Wing.fbx" />
     <MeshContentTask Include="Table\table.FBX">
       <FileType>Document</FileType>
     </MeshContentTask>
-    <MeshContentTask Include="Thruster\thruster.fbx" />
     <MeshContentTask Include="Vase\JEMINA vase -up.fbx">
       <FileType>Document</FileType>
     </MeshContentTask>
-    <MeshContentTask Include="Wheel\wheelLeft.fbx" />
-    <MeshContentTask Include="Wing\WingLeft.fbx" />
-    <MeshContentTask Include="Wing\wingRight.fbx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

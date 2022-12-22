@@ -55,7 +55,10 @@ CustomBaseObject::~CustomBaseObject()
     {
         deMaterialize();
     }
-    
+
+    //Deletes collision report
+    delete col_report_forces;
+
     //Sets all the basic pointers to nullptr
     physic_scene = nullptr;
     composite_body = nullptr;
@@ -144,6 +147,7 @@ void CustomBaseObject::materialize()
     //Sizes the hitbox 
     const q3Vec3 extents_obj = {object_extents};
     hitbox_obj.Set(transform_obj, extents_obj);
+    hitbox_obj.SetFriction(0.8f);
     
     //Adds the box to the physics engine and
     //Saves the memory location of the specific body
@@ -275,9 +279,27 @@ bool CustomBaseObject::checkOutsideCollisions(q3AABB& AABB_object, CollisionRepo
  */
 void CustomBaseObject::applyInputToBlock(GameData* _GD, const Vector3& input_vector)
 {
+    //Input vector notes:
+    // X is W & S
+    // Y is A & D
+    // Z is Space & CTRL
+    
     //Does not apply a force if no input has been received
     if(input_vector == Vector3::Zero) return;
 
+    //Forces need to be applied only if the object is touching something else?
+    if(forces_on_touch)
+    {
+        q3AABB AABB_object;
+
+        //Checks for collision with another object in the physic scene
+        if(checkInsideCollisions(AABB_object, col_report_forces))
+        {
+            //If none, returns.
+            return;
+        }
+    }
+    
     //Rotates vector based on current block rotation, not vehicle rotation
     Vector3 input_vector_rot = XMVector3Rotate(input_vector, input_rotation);
     //Rounding input vec to 1
@@ -354,6 +376,12 @@ void CustomBaseObject::saveData()
         const Vector3& base_force = base_forces[i];
 
         force = base_force;
+    }
+
+    //if forces have to be applied only on collision creates a collision report
+    if(forces_on_touch)
+    {
+        col_report_forces = new CollisionReport;
     }
 }
 

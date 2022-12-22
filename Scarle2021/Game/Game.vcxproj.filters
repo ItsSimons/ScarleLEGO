@@ -198,9 +198,6 @@
     <ClInclude Include="LEGOcube.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="LEGOUserInterface.h">
-      <Filter>LEGOComponent\UserInterface</Filter>
-    </ClInclude>
     <ClInclude Include="LEGOwheel.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
@@ -212,6 +209,12 @@
     </ClInclude>
     <ClInclude Include="LEGOsteeringWheel.h">
       <Filter>LEGOComponent\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="LEGOplatform.h">
+      <Filter>LEGOComponent\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface.h">
+      <Filter>LEGOComponent\UserInterface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -290,7 +293,7 @@
     <ClCompile Include="CustomBaseObject.cpp">
       <Filter>LEGOComponent\Objects\Base Object</Filter>
     </ClCompile>
-    <ClCompile Include="LEGOUserInterface.cpp">
+    <ClCompile Include="UserInterface.cpp">
       <Filter>LEGOComponent\UserInterface</Filter>
     </ClCompile>
   </ItemGroup>

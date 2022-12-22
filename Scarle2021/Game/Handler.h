@@ -16,6 +16,7 @@
 #include "LEGOwing.h"
 #include "LEGOwheel.h"
 #include "LEGOcube.h"
+#include "LEGOplatform.h"
 
 namespace LEGO
 {
@@ -54,6 +55,7 @@ namespace LEGO
 		
 		//Cose belle
 		std::vector<CustomBaseObject*> scene_blocks;
+		std::vector<LEGOplatform*> scene_platforms;
 
 		//test cuboidi
 		CustomBaseObject* holding_obj = nullptr;

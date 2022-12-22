@@ -15,16 +15,35 @@
     <Filter Include="VBFileModels">
       <UniqueIdentifier>{6697cb77-25ae-4be6-b1c9-f44a6aef5e66}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LEGO Blocks">
+      <UniqueIdentifier>{7a03dbd3-0f4a-463a-85b0-504782155b5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <MeshContentTask Include="Vase\JEMINA vase -up.fbx" />
     <MeshContentTask Include="Table\table.FBX" />
     <MeshContentTask Include="Bird\BirdModelV1.fbx" />
     <MeshContentTask Include="Cube\cubetto.fbx" />
-    <MeshContentTask Include="Structure Cube\thing.fbx" />
-    <MeshContentTask Include="Wing\wingRight.fbx" />
-    <MeshContentTask Include="Wing\WingLeft.fbx" />
-    <MeshContentTask Include="Thruster\thruster.fbx" />
-    <MeshContentTask Include="Wheel\wheelLeft.fbx" />
+    <MeshContentTask Include="LEGOmodels\Wing.fbx">
+      <Filter>LEGO Blocks</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="LEGOmodels\Wheel.fbx">
+      <Filter>LEGO Blocks</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="LEGOmodels\Thruster.fbx">
+      <Filter>LEGO Blocks</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="LEGOmodels\SteeringWheel.fbx">
+      <Filter>LEGO Blocks</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="LEGOmodels\StartCube.fbx">
+      <Filter>LEGO Blocks</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="LEGOmodels\Cube.fbx">
+      <Filter>LEGO Blocks</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="LEGOmodels\Platform.fbx">
+      <Filter>LEGO Blocks</Filter>
+    </MeshContentTask>
   </ItemGroup>
 </Project>

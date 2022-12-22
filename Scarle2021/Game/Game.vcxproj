@@ -185,10 +185,10 @@
     <ClInclude Include="Helper.h" />
     <ClInclude Include="ImageGO2D.h" />
     <ClInclude Include="LEGOcube.h" />
+    <ClInclude Include="LEGOplatform.h" />
     <ClInclude Include="LEGOstartingBlock.h" />
     <ClInclude Include="LEGOsteeringWheel.h" />
     <ClInclude Include="LEGOthruster.h" />
-    <ClInclude Include="LEGOUserInterface.h" />
     <ClInclude Include="LEGOwheel.h" />
     <ClInclude Include="LEGOwing.h" />
     <ClInclude Include="Light.h" />
@@ -207,6 +207,7 @@
     <ClInclude Include="TPSCamera.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="TreeBit.h" />
+    <ClInclude Include="UserInterface.h" />
     <ClInclude Include="VBCube.h" />
     <ClInclude Include="VBGO.h" />
     <ClInclude Include="VBPillow.h" />
@@ -224,7 +225,6 @@
     <ClCompile Include="GPGO.cpp" />
     <ClCompile Include="Handler.cpp" />
     <ClCompile Include="ImageGO2D.cpp" />
-    <ClCompile Include="LEGOUserInterface.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="Loop.cpp" />
     <ClCompile Include="MarchCubes.cpp" />
@@ -243,6 +243,7 @@
     <ClCompile Include="TPSCamera.cpp" />
     <ClCompile Include="Tree.cpp" />
     <ClCompile Include="treebit.cpp" />
+    <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="VBCube.cpp" />
     <ClCompile Include="VBGO.cpp" />
     <ClCompile Include="VBSnail.cpp" />

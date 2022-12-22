@@ -63,11 +63,11 @@ protected:
     q3Vec3 object_extents;
     Vector3 base_object_extents;
     float extents_offset = 3.f; //How much from the outer faces collisions are checked
+    
+    bool created = false; //Item has been created?
+    bool forces_on_touch = false; //Forces applied only on touch?
 
-    //Item has been created?
-    bool created = false;
-
-    //Forces Enum and Vectors
+    //Forces Data
     enum forces_index
     {
         forward_f,
@@ -80,6 +80,9 @@ protected:
     //Forces applied vectors
     std::vector<Vector3> forces{};
     std::vector<Vector3> base_forces{};
+
+    //Forces collision report
+    CollisionReport* col_report_forces = nullptr;
 
     //Saved rotation for input vector
     Quaternion input_rotation;

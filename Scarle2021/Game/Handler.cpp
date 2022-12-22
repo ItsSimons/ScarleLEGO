@@ -2,20 +2,31 @@
 #include "pch.h"
 #include "Handler.h"
 
+#include "LEGOstartingBlock.h"
+#include "LEGOsteeringWheel.h"
+
 
 LEGO::Handler::Handler(GameData* _GD, DrawData* _DD, DrawData2D* _DD2D, ID3D11Device* _d3dDevice,
-	ID3D11DeviceContext1* _d3dContext, IEffectFactory* _fxFactory) : GD(_GD), DD(_DD), DD2D(_DD2D),
-	d3dDevice(_d3dDevice), d3dContext(_d3dContext), fxFactory(_fxFactory)
+                       ID3D11DeviceContext1* _d3dContext, IEffectFactory* _fxFactory) : GD(_GD), DD(_DD), DD2D(_DD2D),
+                       d3dDevice(_d3dDevice), d3dContext(_d3dContext), fxFactory(_fxFactory)
 {
 	//Sets the physic library to calculate steps with a 16.6667ms interval
 	//(as game is locked to 60fps, an accumulator is not needed)
 	physic_scene = new q3Scene(1.f / 60.f);
 	physic_scene->SetAllowSleep(true);
 	physic_scene->SetEnableFriction(true);
+	//Unrealistic gravity but feels better
+	physic_scene->SetGravity(q3Vec3(0,-19.62, 0));
 }
 
 LEGO::Handler::~Handler() 
 {
+	//Deletes all the platforms
+	for (auto platform : scene_platforms)
+	{
+		delete platform;
+	}
+	
 	//Deletes all the block of the vehicle
 	for(auto& block : scene_blocks)
 	{
@@ -34,26 +45,48 @@ void LEGO::Handler::initialize()
 		debug_render = std::make_unique<DebugRender>(d3dDevice, d3dContext);
 	}
 	
-	//Creating a platform
-	//NEED TO TEXTURE THIS
+	//Creates a composite platform for the player to drive on
 	q3Body* platform;
 	q3BodyDef bodyDef;
-	platform = physic_scene->CreateBody( bodyDef ); //Returns a pointer to an object
-	q3BoxDef boxDef;
-	q3Transform tx;
-	q3Identity( tx );
-	tx.position.Set(0, -50, 0);
-	boxDef.Set( tx, q3Vec3( 1500.0f, 1.0f, 1500.0f ) );
-	platform->AddBox( boxDef );
+	bodyDef.bodyType = eStaticBody;
+	platform = physic_scene->CreateBody( bodyDef );
 
-	//Populates the composite body
+	//Ammount and size of platforms
+	const int platform_x = 8;
+	const int platform_y = 8;
+	const int platform_size_x = 100;
+	const int platform_size_y = 100;
+	//finds a midpoint to offset the platforms to the center
+	const int mid_point_x = ((platform_x - 1) * platform_size_x) * 0.5f;
+	const int mid_point_y = ((platform_y - 1) * platform_size_y) * 0.5f;
+	
+	for (int i = 0; i < platform_x; ++i)
+	{
+		for (int j = 0; j < platform_y; ++j)
+		{
+			//Creates a platform and adds it to the platforms composite body
+			auto current_platform = new LEGOplatform(d3dDevice, fxFactory, physic_scene, platform);
+			current_platform->SetPos(Vector3(
+				platform_size_x * i - mid_point_x, -50,
+				platform_size_y * j - mid_point_y));
+			current_platform->materialize();
+			scene_platforms.push_back(current_platform);
+		}
+	}
+	//Ticks all the newly created platforms at least once
+	for (auto platform : scene_platforms)
+	{
+		platform->Tick(GD);
+	}
+
+	//Creates the mobile composite body
 	//This will be the "vehicle"
 	q3BodyDef composite_body_def;
 	composite_body_def.bodyType = eDynamicBody;
 	composite_body = physic_scene->CreateBody(composite_body_def);
 
 	//Temporary
-	holding_obj = new LEGOcube(d3dDevice, fxFactory, physic_scene, composite_body);
+	holding_obj = new LEGOstartingCube(d3dDevice, fxFactory, physic_scene, composite_body);
 	//Not textured?
 	holding_obj->materialize();
 	scene_blocks.push_back(holding_obj);
@@ -173,7 +206,7 @@ void LEGO::Handler::update()
 			break;
 		case 2:
 			delete holding_obj;
-			holding_obj = new LEGOwing(d3dDevice, fxFactory, physic_scene, composite_body);
+			holding_obj = new LEGOsteeringWheel(d3dDevice, fxFactory, physic_scene, composite_body);
 			holding_obj->SetPos(current_pos);
 			break;
 		case 3:
@@ -208,6 +241,11 @@ void LEGO::Handler::update()
 
 void LEGO::Handler::render()
 {
+	for (auto platform : scene_platforms)
+	{
+		platform->Draw(DD);
+	}
+	
 	for(auto& block : scene_blocks)
 	{
 		block->Draw(DD);
