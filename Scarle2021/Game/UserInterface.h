@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CMOGO.h"
+#include "CustomBaseObject.h"
 #include "GameData.h"
 #include "DrawData2D.h"
 #include "ObjectList.h"
@@ -15,10 +16,16 @@ public:
     void update(GameData* _GD);
     void render(DrawData2D* _DD2D);
 
+    CustomBaseObject* testone();
+
 private:
-    Vector2 resolution_UI = {1024, 576};
+    Vector2 ui_res = {1024, 576};
+    Vector2 game_res = {0, 0};
 
-
-    std::vector<GameObject2D*> elements_UI{};
+    GameObject2D* cursor = nullptr;
+    float cursor_speed = 3.f;
+    
+    std::vector<GameObject2D*> elements_UI;
 };
+
 

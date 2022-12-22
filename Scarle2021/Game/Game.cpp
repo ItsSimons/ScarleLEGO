@@ -474,7 +474,7 @@ void Game::ReadInput()
     }
 
     m_GD->m_MS = m_mouse->GetState();
-
+    
     //lock the cursor to the centre of the window
     RECT window;
     GetWindowRect(m_window, &window);
