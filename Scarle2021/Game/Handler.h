@@ -2,7 +2,6 @@
 
 //Scarle Headers
 #include "GameData.h"
-#include "GameState.h"
 #include "DrawData.h"
 #include "DrawData2D.h"
 #include "ObjectList.h"
@@ -10,6 +9,7 @@
 
 //Lego Headers
 #include <iostream>
+#include "UserInterface.h"
 #include "DebugRender.h"
 #include "CustomBaseObject.h"
 #include "LEGOthruster.h"
@@ -27,7 +27,7 @@ namespace LEGO
 						 ID3D11DeviceContext1* _d3dContext, IEffectFactory* _fxFactory);
 		~Handler();
 
-		void initialize();
+		void initialize(const Vector2& resolution);
 		void update();
 		void render();
 		void readInput();
@@ -49,6 +49,9 @@ namespace LEGO
 		//Debug render
 		std::unique_ptr<DebugRender> debug_render = nullptr;
 		bool debug_mode = true;
+
+		//User Interface
+		std::unique_ptr<UserInterface> UI;
 
 		//WASD and SPACE movement
 		Vector3 input_vector = Vector3::Zero;

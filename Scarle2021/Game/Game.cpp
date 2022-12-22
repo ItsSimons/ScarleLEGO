@@ -26,7 +26,8 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_window = _window;
     m_outputWidth = std::max(_width, 1);
     m_outputHeight = std::max(_height, 1);
-
+    m_windowResolution = Vector2(m_outputWidth, m_outputHeight);
+    
     CreateDevice();
 
     CreateResources();
@@ -107,7 +108,7 @@ void Game::Initialize(HWND _window, int _width, int _height)
     }
 
     //Inits the lego component
-    m_legoComponent->initialize();
+    m_legoComponent->initialize(m_windowResolution);
 }
 
 // Executes the basic game loop.
@@ -196,13 +197,14 @@ void Game::Render()
     {
         (*it)->Draw(m_DD2D);
     }
-    m_DD2D->m_Sprites->End();
-
-    //drawing text screws up the Depth Stencil State, this puts it back again!
-    m_d3dContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
-
+    
     //Renders the lego component
     m_legoComponent->render();
+
+    //Ends sprite batch stuff
+    m_DD2D->m_Sprites->End();
+    //drawing text screws up the Depth Stencil State, this puts it back again!
+    m_d3dContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
     
     Present();
 }

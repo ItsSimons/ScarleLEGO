@@ -74,6 +74,7 @@ private:
     HWND                                            m_window;
     int                                             m_outputWidth;
     int                                             m_outputHeight;
+    Vector2                                         m_windowResolution;
 
     D3D_FEATURE_LEVEL                               m_featureLevel;
     Microsoft::WRL::ComPtr<ID3D11Device1>           m_d3dDevice;

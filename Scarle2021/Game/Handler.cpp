@@ -17,6 +17,9 @@ LEGO::Handler::Handler(GameData* _GD, DrawData* _DD, DrawData2D* _DD2D, ID3D11De
 	physic_scene->SetEnableFriction(true);
 	//Unrealistic gravity but feels better
 	physic_scene->SetGravity(q3Vec3(0,-19.62, 0));
+
+	//Inits the UI
+	UI = std::make_unique<UserInterface>();
 }
 
 LEGO::Handler::~Handler() 
@@ -37,13 +40,15 @@ LEGO::Handler::~Handler()
 	delete physic_scene;
 }
 
-void LEGO::Handler::initialize()
+void LEGO::Handler::initialize(const Vector2& resolution)
 {
 	//User option to turn on debug mode
 	if(debug_mode)
 	{
 		debug_render = std::make_unique<DebugRender>(d3dDevice, d3dContext);
 	}
+	
+	UI->initialize(d3dDevice, resolution);
 	
 	//Creates a composite platform for the player to drive on
 	q3Body* platform;
@@ -99,6 +104,8 @@ void LEGO::Handler::update()
 	//Pausing available by stopping step
 	if(step_physic_library){physic_scene->Step();}
 
+	UI->update(GD);
+	
 	auto current_pos = holding_obj->GetPos();
 
 	//Just movement done bad
@@ -219,7 +226,6 @@ void LEGO::Handler::update()
  	
 	//Ticks the object being hold
 	holding_obj->Tick(GD);
-
 	
 	for(auto& block : scene_blocks)
 	{
@@ -241,6 +247,8 @@ void LEGO::Handler::update()
 
 void LEGO::Handler::render()
 {
+	UI->render(DD2D);
+	
 	for (auto platform : scene_platforms)
 	{
 		platform->Draw(DD);
