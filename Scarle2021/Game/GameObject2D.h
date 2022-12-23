@@ -36,6 +36,7 @@ public:
 
 	//getter
 	const Vector2& GetPos() { return m_pos; }
+	const Vector2& GetScale() { return m_scale; }
 
 protected:
 	Vector2 m_pos;

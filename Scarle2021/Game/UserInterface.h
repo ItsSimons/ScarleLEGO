@@ -1,10 +1,7 @@
 #pragma once
-
-#include "CMOGO.h"
 #include "CustomBaseObject.h"
-#include "GameData.h"
-#include "DrawData2D.h"
 #include "ObjectList.h"
+#include "UIbutton.h"
 
 class UserInterface
 {
@@ -13,19 +10,27 @@ public:
     ~UserInterface();
 
     void initialize(ID3D11Device* _d3dDevice, const Vector2& resolution);
+    CustomBaseObject* getSelection(const Vector3& spawn_pos, ID3D11Device* _pd3dDevice, IEffectFactory* _EF,
+                                   q3Scene* _physic_scene, q3Body* _composite_body);
+    
     void update(GameData* _GD);
     void render(DrawData2D* _DD2D);
-
-    CustomBaseObject* testone();
 
 private:
     Vector2 ui_res = {1024, 576};
     Vector2 game_res = {0, 0};
 
-    GameObject2D* cursor = nullptr;
+    ImageGO2D* cursor = nullptr;
+    Vector2 cursor_scale = {0,0};
+    Vector2 cursor_res = {0,0};
     float cursor_speed = 3.f;
     
+    std::vector<GameObject2D*> buttons_UI;
     std::vector<GameObject2D*> elements_UI;
+
+    ButtonInterface* test_ui = nullptr;
+
+    
 };
 
 

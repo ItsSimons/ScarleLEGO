@@ -216,6 +216,12 @@
     <ClInclude Include="UserInterface.h">
       <Filter>LEGOComponent\UserInterface</Filter>
     </ClInclude>
+    <ClInclude Include="UIbutton.h">
+      <Filter>LEGOComponent\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonInterface.h">
+      <Filter>LEGOComponent\UserInterface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">

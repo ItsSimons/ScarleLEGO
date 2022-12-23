@@ -22,7 +22,10 @@ ImageGO2D::ImageGO2D(string _fileName, ID3D11Device* _GD) :m_pTextureRV(nullptr)
 	m_pTextureRV->GetResource(&pResource);
 	((ID3D11Texture2D*)pResource)->GetDesc(&Desc);
 
-	m_origin = 0.5f * Vector2((float)Desc.Width, (float)Desc.Height);//around which rotation and scaing is done
+	m_width = (float)Desc.Width;
+	m_height = (float)Desc.Height;
+
+	m_origin = 0.5f * Vector2(m_width, m_height);//around which rotation and scaing is done
 
 	if (hr != S_OK)
 	{
@@ -47,12 +50,16 @@ void ImageGO2D::Tick(GameData* _GD)
 	//m_rotation += _GD->m_dt;
 }
 
-
-
 void ImageGO2D::Draw(DrawData2D* _DD)
 {
 	//nullptr can be changed to a RECT* to define what area of this image to grab
 	//you can also add an extra value at the end to define layer depth
 	//right click and "Go to Defintion/Declaration" to see other version of this in DXTK
 	_DD->m_Sprites->Draw(m_pTextureRV, m_pos, nullptr, m_colour, m_rotation, m_origin, m_scale, SpriteEffects_None);
+}
+
+//Returns the image's resolution
+Vector2 ImageGO2D::GetRes() const
+{
+	return Vector2(m_width, m_height);
 }

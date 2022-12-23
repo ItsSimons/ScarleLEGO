@@ -16,6 +16,8 @@
 #include "LEGOwing.h"
 #include "LEGOwheel.h"
 #include "LEGOcube.h"
+#include "LEGOstartingBlock.h"
+#include "LEGOsteeringWheel.h"
 #include "LEGOplatform.h"
 
 namespace LEGO

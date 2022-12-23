@@ -2,10 +2,6 @@
 #include "pch.h"
 #include "Handler.h"
 
-#include "LEGOstartingBlock.h"
-#include "LEGOsteeringWheel.h"
-
-
 LEGO::Handler::Handler(GameData* _GD, DrawData* _DD, DrawData2D* _DD2D, ID3D11Device* _d3dDevice,
                        ID3D11DeviceContext1* _d3dContext, IEffectFactory* _fxFactory) : GD(_GD), DD(_DD), DD2D(_DD2D),
                        d3dDevice(_d3dDevice), d3dContext(_d3dContext), fxFactory(_fxFactory)
@@ -332,7 +328,19 @@ void LEGO::Handler::readInput()
 		input_vector.z = 0;
 	}
 
+	//gets selection?
+	if(GD->m_MS.leftButton)
+	{
+		const Vector3 spawn_pos = holding_obj->GetPos();
+		CustomBaseObject* block_hold = UI->getSelection(spawn_pos, d3dDevice, fxFactory, physic_scene, composite_body);
+		if(block_hold != nullptr)
+		{
+			delete holding_obj;
+			holding_obj = block_hold;
+		}
+	}
 
+	
 	
 	//THE MOST UTTERLY RETARDED WAY OF INPUT EVER
 	//Afterall, this is for testing

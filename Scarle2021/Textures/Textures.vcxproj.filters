@@ -6,5 +6,6 @@
     <ImageContentTask Include="white.jpg" />
     <ImageContentTask Include="background_UI.png" />
     <ImageContentTask Include="cursor.png" />
+    <ImageContentTask Include="text_bg.png" />
   </ItemGroup>
 </Project>
