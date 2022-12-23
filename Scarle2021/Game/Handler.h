@@ -12,13 +12,13 @@
 #include "UserInterface.h"
 #include "DebugRender.h"
 #include "CustomBaseObject.h"
-#include "LEGOthruster.h"
-#include "LEGOwing.h"
-#include "LEGOwheel.h"
-#include "LEGOcube.h"
-#include "LEGOstartingBlock.h"
-#include "LEGOsteeringWheel.h"
-#include "LEGOplatform.h"
+#include "LEGOThruster.h"
+#include "LEGOWing.h"
+#include "LEGOWheel.h"
+#include "LEGOCube.h"
+#include "LEGOStartingBlock.h"
+#include "LEGOSteeringWheel.h"
+#include "LEGOPlatform.h"
 
 namespace LEGO
 {
@@ -60,7 +60,7 @@ namespace LEGO
 		
 		//Cose belle
 		std::vector<CustomBaseObject*> scene_blocks;
-		std::vector<LEGOplatform*> scene_platforms;
+		std::vector<LEGOPlatform*> scene_platforms;
 
 		//test cuboidi
 		CustomBaseObject* holding_obj = nullptr;

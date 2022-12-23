@@ -1,10 +1,10 @@
 #pragma once
 #include "CustomBaseObject.h"
 
-class LEGOwing : public CustomBaseObject
+class LEGOWing : public CustomBaseObject
 {
 public:
-    LEGOwing(ID3D11Device* _pd3dDevice, IEffectFactory* _EF, q3Scene* _physic_scene, q3Body* _composite_body)
+    LEGOWing(ID3D11Device* _pd3dDevice, IEffectFactory* _EF, q3Scene* _physic_scene, q3Body* _composite_body)
         : CustomBaseObject("Wing",_pd3dDevice, _EF, _physic_scene, _composite_body)
     {
         m_scale = Vector3{ 5.f, 5.f, 7.5f };

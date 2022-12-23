@@ -40,28 +40,32 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
 
     //UI buttons
     //This is where newly added components are added
-    buttons_UI.push_back(new UIbutton<LEGOcube>(resolution/2, _d3dDevice));
-    buttons_UI.push_back(new UIbutton<LEGOwheel>(resolution/2, _d3dDevice));
-    buttons_UI.push_back(new UIbutton<LEGOsteeringWheel>(resolution/2, _d3dDevice));
-    buttons_UI.push_back(new UIbutton<LEGOthruster>(resolution/2, _d3dDevice));
-    buttons_UI.push_back(new UIbutton<LEGOwing>(resolution/2, _d3dDevice));
+    buttons_UI.push_back(new BlockButton<LEGOCube>(resolution/2, _d3dDevice));
+    buttons_UI.push_back(new BlockButton<LEGOWheel>(resolution/2, _d3dDevice));
+    buttons_UI.push_back(new BlockButton<LEGOSteeringWheel>(resolution/2, _d3dDevice));
+    buttons_UI.push_back(new BlockButton<LEGOThruster>(resolution/2, _d3dDevice));
+    buttons_UI.push_back(new BlockButton<LEGOWing>(resolution/2, _d3dDevice));
 
-    Vector2 start_offset = Vector2(game_res - ui_res);
-
-    //for (int i = 0; i < buttons_UI.size(); ++i)
-    //    for (int j = 0; j < 2; ++j)
-   //     {
-   //         if(i + j >= buttons_UI.size())
-   //             i = INFINITE;
-    //            j = INFINITE;
-   //             break;
-    //    }
-    
-    
+    //Places the buttons in a grid
     for (int i = 0; i < buttons_UI.size(); ++i)
     {
-        buttons_UI[i]->setPos(Vector2(420*i, 200));
+        int height_mul = i / 2;
+        Vector2 new_pos = Vector2{
+            0,static_cast<float>(game_res.y * 0.22 + (buttons_UI[i]->getRes().y * 1.15f) * height_mul)};
+
+        //If I is even button will be placed in the column in the left
+        if(i % 2 == 0)
+        {
+            new_pos = Vector2(game_res.x * 0.332f, new_pos.y);
+        }
+        else
+        {
+            new_pos = Vector2(game_res.x * 0.668f, new_pos.y);
+        }
+
+        buttons_UI[i]->setPos(new_pos);
     }
+    
 }
 
 CustomBaseObject* UserInterface::getSelection(const Vector3& spawn_pos, ID3D11Device* _pd3dDevice, IEffectFactory* _EF,

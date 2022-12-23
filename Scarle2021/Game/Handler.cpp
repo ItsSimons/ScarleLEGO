@@ -66,7 +66,7 @@ void LEGO::Handler::initialize(const Vector2& resolution)
 		for (int j = 0; j < platform_y; ++j)
 		{
 			//Creates a platform and adds it to the platforms composite body
-			auto current_platform = new LEGOplatform(d3dDevice, fxFactory, physic_scene, platform);
+			auto current_platform = new LEGOPlatform(d3dDevice, fxFactory, physic_scene, platform);
 			current_platform->SetPos(Vector3(
 				platform_size_x * i - mid_point_x, -50,
 				platform_size_y * j - mid_point_y));
@@ -87,11 +87,11 @@ void LEGO::Handler::initialize(const Vector2& resolution)
 	composite_body = physic_scene->CreateBody(composite_body_def);
 
 	//Temporary
-	holding_obj = new LEGOstartingCube(d3dDevice, fxFactory, physic_scene, composite_body);
+	holding_obj = new LEGOStartingCube(d3dDevice, fxFactory, physic_scene, composite_body);
 	//Not textured?
 	holding_obj->materialize();
 	scene_blocks.push_back(holding_obj);
-	holding_obj = new LEGOcube(d3dDevice, fxFactory, physic_scene, composite_body);
+	holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
 }
 
 void LEGO::Handler::update()
@@ -152,19 +152,19 @@ void LEGO::Handler::update()
 			switch (current_object)
 			{
 			case 0:
-				holding_obj = new LEGOcube(d3dDevice, fxFactory, physic_scene, composite_body);
+				holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
 				holding_obj->SetPos(current_pos);
 				break;
 			case 1:
-				holding_obj = new LEGOthruster(d3dDevice, fxFactory, physic_scene, composite_body);
+				holding_obj = new LEGOThruster(d3dDevice, fxFactory, physic_scene, composite_body);
 				holding_obj->SetPos(current_pos);
 				break;
 			case 2:
-				holding_obj = new LEGOwing(d3dDevice, fxFactory, physic_scene, composite_body);
+				holding_obj = new LEGOWing(d3dDevice, fxFactory, physic_scene, composite_body);
 				holding_obj->SetPos(current_pos);
 				break;
 			case 3:
-				holding_obj = new LEGOwheel(d3dDevice, fxFactory, physic_scene, composite_body);
+				holding_obj = new LEGOWheel(d3dDevice, fxFactory, physic_scene, composite_body);
 				holding_obj->SetPos(current_pos);
 				break;
 			}
@@ -199,22 +199,22 @@ void LEGO::Handler::update()
 		{
 		case 0:
 			delete holding_obj;
-			holding_obj = new LEGOcube(d3dDevice, fxFactory, physic_scene, composite_body);
+			holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
 			holding_obj->SetPos(current_pos);
 			break;
 		case 1:
 			delete holding_obj;
-			holding_obj = new LEGOwheel(d3dDevice, fxFactory, physic_scene, composite_body);
+			holding_obj = new LEGOWheel(d3dDevice, fxFactory, physic_scene, composite_body);
 			holding_obj->SetPos(current_pos);
 			break;
 		case 2:
 			delete holding_obj;
-			holding_obj = new LEGOsteeringWheel(d3dDevice, fxFactory, physic_scene, composite_body);
+			holding_obj = new LEGOSteeringWheel(d3dDevice, fxFactory, physic_scene, composite_body);
 			holding_obj->SetPos(current_pos);
 			break;
 		case 3:
 			delete holding_obj;
-			holding_obj = new LEGOthruster(d3dDevice, fxFactory, physic_scene, composite_body);
+			holding_obj = new LEGOThruster(d3dDevice, fxFactory, physic_scene, composite_body);
 			holding_obj->SetPos(current_pos);
 			break;
 		}

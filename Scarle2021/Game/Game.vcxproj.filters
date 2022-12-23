@@ -192,31 +192,31 @@
     <ClInclude Include="CustomBaseObject.h">
       <Filter>LEGOComponent\Objects\Base Object</Filter>
     </ClInclude>
-    <ClInclude Include="LEGOthruster.h">
+    <ClInclude Include="LEGOThruster.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="LEGOcube.h">
+    <ClInclude Include="LEGOCube.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="LEGOwheel.h">
+    <ClInclude Include="LEGOWheel.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="LEGOwing.h">
+    <ClInclude Include="LEGOWing.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="LEGOstartingBlock.h">
+    <ClInclude Include="LEGOStartingBlock.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="LEGOsteeringWheel.h">
+    <ClInclude Include="LEGOSteeringWheel.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="LEGOplatform.h">
+    <ClInclude Include="LEGOPlatform.h">
       <Filter>LEGOComponent\Objects</Filter>
     </ClInclude>
     <ClInclude Include="UserInterface.h">
       <Filter>LEGOComponent\UserInterface</Filter>
     </ClInclude>
-    <ClInclude Include="UIbutton.h">
+    <ClInclude Include="BlockButton.h">
       <Filter>LEGOComponent\UserInterface</Filter>
     </ClInclude>
     <ClInclude Include="ButtonInterface.h">
