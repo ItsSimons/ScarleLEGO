@@ -10,7 +10,7 @@ UserInterface::~UserInterface()
 {
     delete cursor;
 
-    for (auto button : buttons_UI)
+    for (auto button : block_buttons_UI)
     {
         delete button;
     }
@@ -40,18 +40,18 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
 
     //UI buttons
     //This is where newly added components are added
-    buttons_UI.push_back(new BlockButton<LEGOCube>(resolution/2, _d3dDevice));
-    buttons_UI.push_back(new BlockButton<LEGOWheel>(resolution/2, _d3dDevice));
-    buttons_UI.push_back(new BlockButton<LEGOSteeringWheel>(resolution/2, _d3dDevice));
-    buttons_UI.push_back(new BlockButton<LEGOThruster>(resolution/2, _d3dDevice));
-    buttons_UI.push_back(new BlockButton<LEGOWing>(resolution/2, _d3dDevice));
+    block_buttons_UI.push_back(new BlockButton<LEGOCube>(resolution/2, _d3dDevice));
+    block_buttons_UI.push_back(new BlockButton<LEGOWheel>(resolution/2, _d3dDevice));
+    block_buttons_UI.push_back(new BlockButton<LEGOSteeringWheel>(resolution/2, _d3dDevice));
+    block_buttons_UI.push_back(new BlockButton<LEGOThruster>(resolution/2, _d3dDevice));
+    block_buttons_UI.push_back(new BlockButton<LEGOWing>(resolution/2, _d3dDevice));
 
     //Places the buttons in a grid
-    for (int i = 0; i < buttons_UI.size(); ++i)
+    for (int i = 0; i < block_buttons_UI.size(); ++i)
     {
         int height_mul = i / 2;
         Vector2 new_pos = Vector2{
-            0,static_cast<float>(game_res.y * 0.22 + (buttons_UI[i]->getRes().y * 1.15f) * height_mul)};
+            0,static_cast<float>(game_res.y * 0.22 + (block_buttons_UI[i]->getRes().y * 1.15f) * height_mul)};
 
         //If I is even button will be placed in the column in the left
         if(i % 2 == 0)
@@ -63,15 +63,16 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
             new_pos = Vector2(game_res.x * 0.668f, new_pos.y);
         }
 
-        buttons_UI[i]->setPos(new_pos);
+        block_buttons_UI[i]->setPos(new_pos);
     }
-    
+
+    test_but = new LoadSaveButton(Vector2(game_res.x/2, game_res.y * 0.825f), _d3dDevice);
 }
 
 CustomBaseObject* UserInterface::getSelection(const Vector3& spawn_pos, ID3D11Device* _pd3dDevice, IEffectFactory* _EF,
     q3Scene* _physic_scene, q3Body* _composite_body)
 {
-    for (auto button : buttons_UI)
+    for (auto button : block_buttons_UI)
     {
         CustomBaseObject* new_block = button->setBlock(spawn_pos, _pd3dDevice, _EF, _physic_scene, _composite_body);
 
@@ -115,10 +116,12 @@ void UserInterface::update(GameData* _GD)
         element->Tick(_GD);
     }
 
-    for (auto button : buttons_UI)
+    for (auto button : block_buttons_UI)
     {
         button->update(_GD, mouse_pos);
     }
+
+    test_but->update(_GD, mouse_pos);
 }
 
 void UserInterface::render(DrawData2D* _DD2D)
@@ -128,10 +131,12 @@ void UserInterface::render(DrawData2D* _DD2D)
         element->Draw(_DD2D);
     }
 
-    for (auto button : buttons_UI)
+    for (auto button : block_buttons_UI)
     {
         button->render(_DD2D);
     }
+
+    test_but->render(_DD2D);
     
     cursor->Draw(_DD2D);
 }

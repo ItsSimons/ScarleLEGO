@@ -67,6 +67,12 @@
     <Filter Include="LEGOComponent\UserInterface">
       <UniqueIdentifier>{30278b95-f80e-44dd-bdc6-0a3f2a8c337a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LEGOComponent\UserInterface\UI Buttons">
+      <UniqueIdentifier>{6d9765c4-7cfd-4624-b624-f9f76331411d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LEGOComponent\UserInterface\UI Buttons\Button Interface">
+      <UniqueIdentifier>{1e5459d2-e4cb-4855-bf68-c57c9696ccb0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -217,10 +223,13 @@
       <Filter>LEGOComponent\UserInterface</Filter>
     </ClInclude>
     <ClInclude Include="BlockButton.h">
-      <Filter>LEGOComponent\UserInterface</Filter>
+      <Filter>LEGOComponent\UserInterface\UI Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadSaveButton.h">
+      <Filter>LEGOComponent\UserInterface\UI Buttons</Filter>
     </ClInclude>
     <ClInclude Include="ButtonInterface.h">
-      <Filter>LEGOComponent\UserInterface</Filter>
+      <Filter>LEGOComponent\UserInterface\UI Buttons\Button Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -301,6 +310,9 @@
     </ClCompile>
     <ClCompile Include="UserInterface.cpp">
       <Filter>LEGOComponent\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadSaveButton.cpp">
+      <Filter>LEGOComponent\UserInterface\UI Buttons</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

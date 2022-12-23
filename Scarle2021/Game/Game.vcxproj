@@ -195,6 +195,7 @@
     <ClInclude Include="LEGOWheel.h" />
     <ClInclude Include="LEGOWing.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="LoadSaveButton.h" />
     <ClInclude Include="Loop.h" />
     <ClInclude Include="MarchCubes.h" />
     <ClInclude Include="ObjectList.h" />
@@ -230,6 +231,7 @@
     <ClCompile Include="Handler.cpp" />
     <ClCompile Include="ImageGO2D.cpp" />
     <ClCompile Include="light.cpp" />
+    <ClCompile Include="LoadSaveButton.cpp" />
     <ClCompile Include="Loop.cpp" />
     <ClCompile Include="MarchCubes.cpp" />
     <ClCompile Include="pch.cpp">

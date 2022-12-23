@@ -2,6 +2,7 @@
 #include "CustomBaseObject.h"
 #include "ObjectList.h"
 #include "BlockButton.h"
+#include "LoadSaveButton.h"
 
 class UserInterface
 {
@@ -25,10 +26,10 @@ private:
     Vector2 cursor_res = {0,0};
     float cursor_speed = 3.f;
     
-    std::vector<ButtonInterface*> buttons_UI;
-    std::vector<GameObject2D*> elements_UI;
+    std::vector<ButtonInterface*> block_buttons_UI{};
+    std::vector<GameObject2D*> elements_UI{};
 
-    
+    LoadSaveButton* test_but = nullptr;
 };
 
 
