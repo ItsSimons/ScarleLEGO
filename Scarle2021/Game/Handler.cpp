@@ -92,6 +92,15 @@ void LEGO::Handler::initialize(const Vector2& resolution)
 	holding_obj->materialize();
 	scene_blocks.push_back(holding_obj);
 	holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
+
+	//Test json??
+	json jsonfile;
+
+	jsonfile["foo"] = "bar";
+	
+
+	std::ofstream o("pretty.json");
+	o << std::setw(4) << jsonfile << std::endl;
 }
 
 void LEGO::Handler::update()

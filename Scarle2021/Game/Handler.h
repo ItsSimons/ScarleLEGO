@@ -7,6 +7,9 @@
 #include "ObjectList.h"
 #include "q3.h"
 
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
 //Lego Headers
 #include <iostream>
 #include "UserInterface.h"

@@ -80,7 +80,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(SolutionDir)qu3d\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(SolutionDir)$(Configuration)\$(Platform)\</LibraryPath>
-    <IncludePath>$(SolutionDir)qu3d\include;$(VC_IncludePath);$(SolutionDir)DirectXTK\Inc\;$(WindowsSDK_IncludePath);$(SolutionDir)Game\</IncludePath>
+    <IncludePath>$(SolutionDir)qu3d\include;$(VC_IncludePath);$(SolutionDir)DirectXTK\Inc\;$(WindowsSDK_IncludePath);$(SolutionDir)Game\;$(SolutionDir)json\include;$(SolutionDir)json\single_include</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -92,7 +92,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(SolutionDir)qu3d\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(SolutionDir)$(Configuration)\$(Platform)\</LibraryPath>
-    <IncludePath>$(SolutionDir)qu3d\include;$(VC_IncludePath);$(SolutionDir)DirectXTK\Inc\;$(WindowsSDK_IncludePath);$(SolutionDir)Game\</IncludePath>
+    <IncludePath>$(SolutionDir)qu3d\include;$(VC_IncludePath);$(SolutionDir)DirectXTK\Inc\;$(WindowsSDK_IncludePath);$(SolutionDir)Game\;$(SolutionDir)json\include;$(SolutionDir)json\single_include</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
