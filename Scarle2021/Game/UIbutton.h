@@ -12,6 +12,9 @@ public:
 	UIbutton(const Vector2& bt_pos, ID3D11Device* _d3dDevice);
 	~UIbutton() override;
 
+	//Sets new button pos
+	void setPos(const Vector2& new_pos) override;
+	
 	//Returns new building block
 	CustomBaseObject* setBlock(const Vector3& spawn_pos, ID3D11Device* _pd3dDevice, IEffectFactory* _EF,
 	                           q3Scene* _physic_scene, q3Body* _composite_body) override;
@@ -74,6 +77,18 @@ UIbutton<T>::~UIbutton()
 {
 	delete button_bg;
 	delete button_text;
+}
+
+/**
+ * \brief sets a new pos for the UI button 
+ * \param new_pos new button location
+ */
+template <class T>
+void UIbutton<T>::setPos(const Vector2& new_pos)
+{
+	button_pos = new_pos - button_res/2;
+	button_bg->SetPos(button_pos);
+	button_text->SetPos(button_pos);
 }
 
 /**

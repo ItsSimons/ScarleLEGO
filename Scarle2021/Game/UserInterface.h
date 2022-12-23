@@ -25,10 +25,8 @@ private:
     Vector2 cursor_res = {0,0};
     float cursor_speed = 3.f;
     
-    std::vector<GameObject2D*> buttons_UI;
+    std::vector<ButtonInterface*> buttons_UI;
     std::vector<GameObject2D*> elements_UI;
-
-    ButtonInterface* test_ui = nullptr;
 
     
 };

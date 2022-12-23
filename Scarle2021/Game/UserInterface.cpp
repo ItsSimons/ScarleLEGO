@@ -9,7 +9,11 @@ UserInterface::UserInterface()
 UserInterface::~UserInterface()
 {
     delete cursor;
-    
+
+    for (auto button : buttons_UI)
+    {
+        delete button;
+    }
     for (auto element : elements_UI)
     {
         delete element;
@@ -34,20 +38,44 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
     background->SetPos(game_res / 2);
     elements_UI.push_back(background);
 
-    //Text?
-    //TextGO2D* button = new TextGO2D("Siuum");
-    //button->SetPos(Vector2(game_res/2));
-    //button->SetColour(Color((float*)&Colors::Yellow));
-    //buttons_UI.push_back(button);
+    //UI buttons
+    //This is where newly added components are added
+    buttons_UI.push_back(new UIbutton<LEGOcube>(resolution/2, _d3dDevice));
+    buttons_UI.push_back(new UIbutton<LEGOwheel>(resolution/2, _d3dDevice));
+    buttons_UI.push_back(new UIbutton<LEGOsteeringWheel>(resolution/2, _d3dDevice));
+    buttons_UI.push_back(new UIbutton<LEGOthruster>(resolution/2, _d3dDevice));
+    buttons_UI.push_back(new UIbutton<LEGOwing>(resolution/2, _d3dDevice));
 
-    //Ui button?
-    test_ui = new UIbutton<LEGOthruster>(resolution/2, _d3dDevice);
+    Vector2 start_offset = Vector2(game_res - ui_res);
+
+    //for (int i = 0; i < buttons_UI.size(); ++i)
+    //    for (int j = 0; j < 2; ++j)
+   //     {
+   //         if(i + j >= buttons_UI.size())
+   //             i = INFINITE;
+    //            j = INFINITE;
+   //             break;
+    //    }
+    
+    
+    for (int i = 0; i < buttons_UI.size(); ++i)
+    {
+        buttons_UI[i]->setPos(Vector2(420*i, 200));
+    }
 }
 
 CustomBaseObject* UserInterface::getSelection(const Vector3& spawn_pos, ID3D11Device* _pd3dDevice, IEffectFactory* _EF,
     q3Scene* _physic_scene, q3Body* _composite_body)
 {
-    return test_ui->setBlock(spawn_pos, _pd3dDevice, _EF, _physic_scene, _composite_body);
+    for (auto button : buttons_UI)
+    {
+        CustomBaseObject* new_block = button->setBlock(spawn_pos, _pd3dDevice, _EF, _physic_scene, _composite_body);
+
+        if(new_block != nullptr)
+            return new_block;
+    }
+    
+    return nullptr;
 }
 
 void UserInterface::update(GameData* _GD)
@@ -85,10 +113,8 @@ void UserInterface::update(GameData* _GD)
 
     for (auto button : buttons_UI)
     {
-        button->Tick(_GD);
+        button->update(_GD, mouse_pos);
     }
-
-    test_ui->update(_GD, cursor->GetPos());
 }
 
 void UserInterface::render(DrawData2D* _DD2D)
@@ -100,10 +126,8 @@ void UserInterface::render(DrawData2D* _DD2D)
 
     for (auto button : buttons_UI)
     {
-        button->Draw(_DD2D);
+        button->render(_DD2D);
     }
-
-    test_ui->render(_DD2D);
     
     cursor->Draw(_DD2D);
 }
