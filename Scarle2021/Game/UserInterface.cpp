@@ -1,8 +1,6 @@
 #include "pch.h"
-#include "iostream"
 #include "UserInterface.h"
-#include "BlockIndex.h"
-
+#include <iostream>
 
 UserInterface::UserInterface()
 = default;
@@ -11,16 +9,24 @@ UserInterface::~UserInterface()
 {
     delete cursor;
 
-    for (auto button : block_buttons_UI)
-    {
-        delete button;
-    }
     for (auto element : elements_UI)
     {
         delete element;
     }
+    for (auto button : block_buttons_UI)
+    {
+        delete button;
+    }
+    for (auto save_point : save_points_UI)
+    {
+        delete save_point;
+    }
 }
 
+/**
+ * \brief Inits the game UI
+ * \param resolution Game res for UI scaling
+ */
 void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resolution)
 {
     game_res = resolution;
@@ -39,13 +45,19 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
     background->SetPos(game_res / 2);
     elements_UI.push_back(background);
 
-    //UI buttons
+    //Iterates through the enums of blocks and creates and UI entry for each one of those, if not blacklisted
+    //This to load new elements directly from the block index file
     for (int EnumInt = id_invalid; EnumInt != id_last; EnumInt++)
     {
+        //Skips if invalid
         if(EnumInt != id_invalid)
         {
-            block_buttons_UI.push_back(new BlockButton(
-                resolution/2, static_cast<BlockIndex>(EnumInt), _d3dDevice));
+            //blacklists engine related blocks
+            if(!(EnumInt == id_LEGOBaseObj || EnumInt == id_LEGOPlatform || EnumInt == id_LEGOStartingCube))
+            {
+                block_buttons_UI.push_back(new BlockButton(
+                    resolution/2, static_cast<BlockIndex>(EnumInt), _d3dDevice));
+            }
         }
     }
     
@@ -69,25 +81,29 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
         block_buttons_UI[i]->setPos(new_pos);
     }
 
-    test_but = new LoadSaveButton(Vector2(game_res.x/2, game_res.y * 0.825f), _d3dDevice);
+    //inits save points
+    //For now they are manyally placed in the UI but they do have a SetPos setter
+    save_points_UI.push_back(new LoadSaveButton(
+        "..\\SaveData\\slot1.json", Vector2(game_res.x * 0.23, game_res.y * 0.825f), _d3dDevice));
+    save_points_UI.push_back(new LoadSaveButton(
+        "..\\SaveData\\slot2.json", Vector2(game_res.x * 0.50, game_res.y * 0.825f), _d3dDevice));
+    save_points_UI.push_back(new LoadSaveButton(
+        "..\\SaveData\\slot3.json", Vector2(game_res.x * 0.77, game_res.y * 0.825f), _d3dDevice)); 
 }
 
-const BlockIndex& UserInterface::getSelectionBlockID()
+void UserInterface::toggleVisibilityUI()
 {
-    for (auto button : block_buttons_UI)
-    {
-        BlockIndex return_id = button->getBlockID();
-        
-        if(return_id != id_invalid)
-        {
-            return return_id;
-        }
-    }
-    return id_invalid;
+    //Brings cursor back in the middle
+    cursor->SetPos(game_res/2);
+    visible = !visible;
 }
+
+//Scarle ---------------------------------------------------------------------------------------------------------------
 
 void UserInterface::update(GameData* _GD)
 {
+    if(!visible) return;
+    
     //Updates the cursor pos with the mouse offset
     const auto& cursor_pos = cursor->GetPos();
     Vector2 mouse_pos = Vector2(cursor_pos.x + _GD->m_MS.x * cursor_speed,
@@ -114,34 +130,120 @@ void UserInterface::update(GameData* _GD)
     cursor->SetPos(mouse_pos);
     cursor->Tick(_GD);
     
-    for (auto element : elements_UI)
+    for (const auto element : elements_UI)
     {
         element->Tick(_GD);
     }
 
-    for (auto button : block_buttons_UI)
+    for (const auto button : block_buttons_UI)
     {
         button->update(_GD, mouse_pos);
     }
 
-    test_but->update(_GD, mouse_pos);
+    for (const auto save_point : save_points_UI)
+    {
+        save_point->update(_GD, mouse_pos);
+    }
 }
 
 void UserInterface::render(DrawData2D* _DD2D)
 {
-    for (auto element : elements_UI)
+    if(!visible) return;
+    
+    for (const auto element : elements_UI)
     {
-        //element->Draw(_DD2D);
+        element->Draw(_DD2D);
     }
-
-    for (auto button : block_buttons_UI)
+    for (const auto button : block_buttons_UI)
     {
         button->render(_DD2D);
     }
-
-    //test_but->render(_DD2D);
+    for (const auto save_point : save_points_UI)
+    {
+        save_point->render(_DD2D);
+    }
     
     cursor->Draw(_DD2D);
 }
 
+// Getters & Setters ---------------------------------------------------------------------------------------------------
 
+/**
+ * \brief Updates the visibility of the UI
+ */
+void UserInterface::setVisibilityUI(bool _visible)
+{
+    visible = _visible;
+}
+
+/**
+ * \return is currently visible?
+ */
+bool UserInterface::getVisibilityUI() const
+{
+    return visible;
+}
+
+/**
+ * \brief Checks all the block buttons to see if one has been pressed.
+ * \return Returns block ID of pressed button
+ */
+const BlockIndex& UserInterface::getSelectionBlockID()
+{
+    if(!visible) return id_invalid;
+    
+    for (const auto button : block_buttons_UI)
+    {
+        const BlockIndex return_id = button->getBlockID();
+        
+        if(return_id != id_invalid)
+        {
+            toggleVisibilityUI();
+            return return_id;
+        }
+    }
+    return id_invalid;
+}
+
+/**
+ * \brief Checks all the Save buttons to see if one has been pressed.
+ * \return Path of file to save to
+ */
+std::string UserInterface::tryGetSavePath() 
+{
+    if(!visible) return "null";
+    
+    for (const auto save_point : save_points_UI)
+    {
+        std::string path = save_point->getSavePath();
+
+        if(path != "null")
+        {
+            //Does not close the UI when saving
+            std::cout << "Saved!" << std::endl;
+            return path;
+        }
+    }
+    return "null";
+}
+
+/**
+ * \brief Checks all the load buttons to see if one has been pressed.
+ * \return Path of file to load from
+ */
+std::string UserInterface::tryGetLoadPath() 
+{
+    if(!visible) return "null";
+    
+    for (const auto save_point : save_points_UI)
+    {
+        std::string path = save_point->getLoadPath();
+
+        if(path != "null")
+        {
+            toggleVisibilityUI();
+            return path;
+        }
+    }
+    return "null";
+}

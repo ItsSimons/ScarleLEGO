@@ -15,13 +15,7 @@ using json = nlohmann::json;
 #include "UserInterface.h"
 #include "DebugRender.h"
 #include "CustomBaseObject.h"
-#include "LEGOThruster.h"
-#include "LEGOWing.h"
-#include "LEGOWheel.h"
-#include "LEGOCube.h"
-#include "LEGOStartingBlock.h"
-#include "LEGOSteeringWheel.h"
-#include "LEGOPlatform.h"
+#include "BlockIndex.h"
 
 namespace LEGO
 {
@@ -33,6 +27,11 @@ namespace LEGO
 		~Handler();
 
 		void initialize(const Vector2& resolution);
+
+		void loadFromPath(const std::string& path);
+		void saveToPath(const std::string& path);
+
+		//Scarle
 		void update();
 		void render();
 		void readInput();

@@ -85,6 +85,7 @@ namespace BlockAssembler
         new_block->setID(block_type);
         new_block->SetPos(block_pos);
         new_block->SetPitchYawRoll(block_rot.x, block_rot.y, block_rot.z);
+        new_block->updateDataOnRotation();
         return new_block;
     }
 

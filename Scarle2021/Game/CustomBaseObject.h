@@ -22,7 +22,8 @@ public:
     //Rotation
     virtual void yawObject(bool clockwise);
     virtual void pitchObject(bool clockwise);
-
+    void updateDataOnRotation();
+    
     //Placing & Removing
     void materialize();
     void deMaterialize();
@@ -40,9 +41,6 @@ public:
     void setID(const BlockIndex& id);
     
 protected:
-    //Rotates all the forces on current object rotation
-    void updateDataOnRotation();
-    
     //Collisions Check
     bool checkInsideCollisions(q3AABB& AABB_object, CollisionReport* collision_report) const;
     bool checkOutsideCollisions(q3AABB& AABB_object, CollisionReport* collision_report,

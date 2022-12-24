@@ -1,22 +1,23 @@
 ﻿#pragma once
-#include "GameData.h"
-#include "DrawData.h"
 #include "ObjectList.h"
 
 class LoadSaveButton
 {
 public:
-	LoadSaveButton(const Vector2& bt_pos, ID3D11Device* _d3dDevice);
+	LoadSaveButton(const std::string& json_path, const Vector2& bt_pos, ID3D11Device* _d3dDevice);
 	~LoadSaveButton();
-
+	
 	//scarle
 	void update(GameData* _GD, const Vector2& mouse_pos);
 	void render(DrawData2D* _DD2D);
-
+	
 	//Getters & setters
 	void setPos(const Vector2& new_pos);
+	std::string getSavePath();
+	std::string getLoadPath();
 	
 private:
+	//Bounds check
 	bool isInside(const Vector2& point, const Vector2& bt_pos, const Vector2& bt_res);
 
 	enum bt_color
@@ -46,4 +47,7 @@ private:
 	bt_color save_new_color = bt_white;
 	bool inside_save = false;
 	bool saved = false;
+
+	//Path to json file
+	std::string filepath = "null";
 };

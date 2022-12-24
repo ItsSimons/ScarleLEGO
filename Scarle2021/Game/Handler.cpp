@@ -89,11 +89,72 @@ void LEGO::Handler::initialize(const Vector2& resolution)
 	//Temporary
 	holding_obj = new LEGOStartingCube(d3dDevice, fxFactory, physic_scene, composite_body);
 	holding_obj->setID(id_LEGOStartingCube);
-	//Not textured?
 	holding_obj->materialize();
 	scene_blocks.push_back(holding_obj);
 	holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
 	holding_obj->setID(id_LEGOCube);
+}
+
+void LEGO::Handler::loadFromPath(const std::string& path)
+{
+	std::ifstream file(path);
+	json jsonfile = json::parse(file);
+	file.close();
+
+	if(!jsonfile.empty())
+	{
+		while(!scene_blocks.empty())
+		{
+			delete scene_blocks.back();
+			scene_blocks.pop_back();
+		}
+			
+		for (auto value : jsonfile)
+		{
+			const Vector3 block_pos = Vector3(
+				value["position"]["x"], value["position"]["y"], value["position"]["z"]);
+			const Vector3 block_rot = Vector3(
+				value["rotation"]["pitch"], value["rotation"]["yaw"], value["rotation"]["roll"]);
+			const BlockIndex block_id = value["type"];
+				
+			scene_blocks.push_back(BlockAssembler::MakeBlock(
+				block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body));
+			scene_blocks.back()->materialize();
+		}
+	}
+}
+
+void LEGO::Handler::saveToPath(const std::string& path)
+{
+	json jsonfile;
+
+	for (auto& block : scene_blocks)
+	{
+		const auto& block_pos = block->GetPos();
+		const auto& block_rot = block->GetPitchYawRoll();
+			
+		jsonfile.push_back(
+			json{
+				{"position", {
+					{"x", block_pos.x},
+					{"y", block_pos.y},
+					{"z", block_pos.z}
+				}
+				},
+				{"rotation", {
+					{"pitch", block_rot.x},
+					{"yaw", block_rot.y},
+					{"roll", block_rot.z},
+				}
+				},
+				{"type", block->getID()}
+			}
+		);
+	}
+	
+	std::ofstream file(path);
+	file << jsonfile;
+	file.close();
 }
 
 void LEGO::Handler::update()
@@ -227,31 +288,7 @@ void LEGO::Handler::update()
 		load = false;
 		loaded = true;
 
-		std::ifstream f("..\\SaveData\\slot1.json");
-		json data = json::parse(f);
-		f.close();
-
-		if(!data.empty())
-		{
-			while(!scene_blocks.empty())
-			{
-				delete scene_blocks.back();
-				scene_blocks.pop_back();
-			}
-			
-			for (auto value : data)
-			{
-				const Vector3 block_pos = Vector3(
-					value["position"]["x"], value["position"]["y"], value["position"]["z"]);
-				const Vector3 block_rot = Vector3(
-					value["rotation"]["pitch"], value["rotation"]["yaw"], value["rotation"]["roll"]);
-				const BlockIndex block_id = value["type"];
-				
-				scene_blocks.push_back(BlockAssembler::MakeBlock(
-					block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body));
-				scene_blocks.back()->materialize();
-			}
-		}
+		UI->toggleVisibilityUI();
 	}
 
 	if(save && !saved)
@@ -259,35 +296,7 @@ void LEGO::Handler::update()
 		save = false;
 		saved = true;
 
-		json jsonfile;
 
-		for (auto& block : scene_blocks)
-		{
-			const auto& block_pos = block->GetPos();
-			const auto& block_rot = block->GetPitchYawRoll();
-			
-			jsonfile.push_back(
-				json{
-					{"position", {
-						{"x", block_pos.x},
-						{"y", block_pos.y},
-						{"z", block_pos.z}
-					}
-					},
-					{"rotation", {
-						{"pitch", block_rot.x},
-						{"yaw", block_rot.y},
-						{"roll", block_rot.z},
-					}
-					},
-					{"type", block->getID()}
-				}
-			);
-		}
-	
-		std::ofstream file("..\\SaveData\\slot1.json");
-		file << jsonfile;
-		file.close();
 	}
  	
 	//Ticks the object being hold
@@ -402,6 +411,8 @@ void LEGO::Handler::readInput()
 	if(GD->m_MS.leftButton)
 	{
 		const BlockIndex block_id = UI->getSelectionBlockID();
+		const std::string save_path = UI->tryGetSavePath();
+		const std::string load_path = UI->tryGetLoadPath();
 
 		if(block_id != id_invalid)
 		{
@@ -411,6 +422,20 @@ void LEGO::Handler::readInput()
 			
 			holding_obj = BlockAssembler::MakeBlock(
 				block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body);
+		}
+
+		if(save_path != "null" && !save_path.empty())
+		{
+			//saving here
+			saveToPath(save_path);
+			//std::cout << save_path << std::endl;
+		}
+
+		if(load_path != "null" && !load_path.empty())
+		{
+			//loading here
+			loadFromPath(load_path);
+			//std::cout << load_path << std::endl;
 		}
 	}
 	

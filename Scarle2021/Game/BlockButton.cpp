@@ -80,7 +80,7 @@ void BlockButton::render(DrawData2D* _DD2D)
 // Bounds check --------------------------------------------------------------------------------------------------------
 
 /**
- * \brief Is the point inside the button?
+ * \brief Checks if a point is inside this current button
  * \param point Vector2 point 
  * \return true if the point is inside 
  */
