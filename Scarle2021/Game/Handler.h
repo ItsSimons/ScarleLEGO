@@ -83,6 +83,11 @@ namespace LEGO
 		
 		int rotator = 0;
 		int current_object = 0;
+
+		bool save = false;
+		bool saved = false;
+		bool load = false;
+		bool loaded = false;
 	};
 }
 

@@ -11,8 +11,7 @@ public:
     ~UserInterface();
 
     void initialize(ID3D11Device* _d3dDevice, const Vector2& resolution);
-    CustomBaseObject* getSelection(const Vector3& spawn_pos, ID3D11Device* _pd3dDevice, IEffectFactory* _EF,
-                                   q3Scene* _physic_scene, q3Body* _composite_body);
+    const BlockIndex& getSelectionBlockID();
     
     void update(GameData* _GD);
     void render(DrawData2D* _DD2D);

@@ -92,15 +92,17 @@ void LEGO::Handler::initialize(const Vector2& resolution)
 	holding_obj->materialize();
 	scene_blocks.push_back(holding_obj);
 	holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
-
-	//Test json??
-	json jsonfile;
-
-	jsonfile["foo"] = "bar";
+	
 	
 
-	std::ofstream o("pretty.json");
-	o << std::setw(4) << jsonfile << std::endl;
+	std::ifstream f("..\\SaveData\\slot1.json");
+	json data = json::parse(f);
+	f.close();
+
+	for (auto value : data)
+	{
+		std::cout << value["position"]["x"] << std::endl;
+	}
 }
 
 void LEGO::Handler::update()
@@ -228,6 +230,50 @@ void LEGO::Handler::update()
 			break;
 		}
 	}
+
+	if(load && !loaded)
+	{
+		load = false;
+		loaded = true;
+
+		std::cout << "ran" << std::endl;
+	}
+
+	if(save && !saved)
+	{
+		save = false;
+		saved = true;
+
+		json jsonfile;
+
+		for (auto& block : scene_blocks)
+		{
+			const auto& block_pos = block->GetPos();
+			const auto& block_rot = block->GetPitchYawRoll();
+			
+			jsonfile.push_back(
+				json{
+					{"position", {
+						{"x", block_pos.x},
+						{"y", block_pos.y},
+						{"z", block_pos.z}
+					}
+					},
+					{"rotation", {
+						{"pitch", block_rot.x},
+						{"yaw", block_rot.y},
+						{"roll", block_rot.z},
+					}
+					},
+					{"Type", "wing"}
+				}
+			);
+		}
+	
+		std::ofstream file("..\\SaveData\\slot1.json");
+		file << jsonfile;
+		file.close();
+	}
  	
 	//Ticks the object being hold
 	holding_obj->Tick(GD);
@@ -340,16 +386,20 @@ void LEGO::Handler::readInput()
 	//gets selection?
 	if(GD->m_MS.leftButton)
 	{
-		const Vector3 spawn_pos = holding_obj->GetPos();
-		CustomBaseObject* block_hold = UI->getSelection(spawn_pos, d3dDevice, fxFactory, physic_scene, composite_body);
-		if(block_hold != nullptr)
+		const BlockIndex block_id = UI->getSelectionBlockID();
+
+		if(block_id != id_invalid)
 		{
+			const Vector3 block_pos = holding_obj->GetPos();
+			const Vector3 block_rot = holding_obj->GetPitchYawRoll();
 			delete holding_obj;
-			holding_obj = block_hold;
+
+			std::cout << block_id << std::endl;
+			
+			holding_obj = BlockAssembler::MakeBlock(
+				block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body);
 		}
 	}
-
-	
 	
 	//THE MOST UTTERLY RETARDED WAY OF INPUT EVER
 	//Afterall, this is for testing
@@ -440,6 +490,27 @@ void LEGO::Handler::readInput()
 		made = false;
 	}
 
+	//temporary loading
+	if(GD->m_KBS.O)
+	{
+		load = true;
+	}
+	else
+	{
+		load = false;
+		loaded = false;
+	}
+	//Temporary saving 
+	if(GD->m_KBS.P)
+	{
+		save = true;
+	}
+	else
+	{
+		save = false;
+		saved = false;
+	}
+	
 	//diocane
 	if(GD->m_KBS.NumPad2)
 	{

@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "iostream"
 #include "CustomBaseObject.h"
 #include <corecrt_math_defines.h>
+#include "BlockIndex.h"
 #include "CollisionReport.h"
 
 /**
@@ -11,8 +11,9 @@
  * \param _physic_scene Current Physic Scene 
  * \param _composite_body "vehicle"
  */
-CustomBaseObject::CustomBaseObject(ID3D11Device* _pd3dDevice, IEffectFactory* _EF, q3Scene* _physic_scene, q3Body* _composite_body)
-    : CMOGO("cubetto", _pd3dDevice, _EF), physic_scene(_physic_scene), composite_body(_composite_body)
+CustomBaseObject::CustomBaseObject(ID3D11Device* _pd3dDevice, IEffectFactory* _EF, q3Scene* _physic_scene,
+    q3Body* _composite_body) : CMOGO("cubetto", _pd3dDevice, _EF), physic_scene(_physic_scene),
+    composite_body(_composite_body), block_id(id_LEGOCube)
 {
     //Right scaling and extents for cubetto, default if model is not specified
     m_scale = Vector3{0.1f, 0.05f, 0.05f};
@@ -29,7 +30,7 @@ CustomBaseObject::CustomBaseObject(ID3D11Device* _pd3dDevice, IEffectFactory* _E
  */
 CustomBaseObject::CustomBaseObject(std::string _filename, ID3D11Device* _pd3dDevice, IEffectFactory* _EF, q3Scene*
     _physic_scene, q3Body* _composite_body) : CMOGO(_filename, _pd3dDevice, _EF),
-    physic_scene(_physic_scene), composite_body(_composite_body)
+    physic_scene(_physic_scene), composite_body(_composite_body), block_id(id_LEGOBaseObj)
 {
     //Set deafult scale
     m_scale = Vector3::One;
@@ -199,7 +200,6 @@ bool CustomBaseObject::place()
             checkOutsideCollisions(AABB_object, collision_report, dummy_extents_y) ||
             checkOutsideCollisions(AABB_object, collision_report, dummy_extents_z))
         {
-            std::cout << "object placed!" << std::endl;
             delete collision_report;
             return true;
         }
@@ -406,4 +406,24 @@ void CustomBaseObject::Draw(DrawData* _DD)
 {
     CMOGO::Draw(_DD);
 }
+
+// Getters/Setters -----------------------------------------------------------------------------------------------------
+
+/**
+ * \return block ID
+ */
+const BlockIndex& CustomBaseObject::getID() const
+{
+    return block_id;
+}
+
+/**
+ * \brief Sets new block ID
+ */
+void CustomBaseObject::setID(const BlockIndex& id)
+{
+    block_id = id;
+}
+
+
 

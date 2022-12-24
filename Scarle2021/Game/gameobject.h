@@ -32,6 +32,7 @@ public:
 	float		GetPitch() { return m_pitch; }
 	float		GetYaw() { return m_yaw; }
 	float		GetRoll() { return m_roll; }
+	Vector3		GetPitchYawRoll() { return Vector3(m_pitch, m_yaw, m_roll); }
 
 	bool		IsPhysicsOn() { return m_physicsOn; }
 	float		GetDrag() { return m_drag; }

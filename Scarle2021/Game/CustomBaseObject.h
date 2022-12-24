@@ -4,6 +4,8 @@
 #include "CMOGO.h"
 #include "CollisionReport.h"
 
+enum BlockIndex : int;
+
 //gameobject with integrated physics
 class CustomBaseObject : public CMOGO
 {
@@ -32,6 +34,10 @@ public:
     //Scarle
     void Tick(GameData* _GD) override;
     void Draw(DrawData* _DD) override;
+
+    //Set/get ID
+    const BlockIndex& getID() const;
+    void setID(const BlockIndex& id);
     
 protected:
     //Rotates all the forces on current object rotation
@@ -49,6 +55,9 @@ protected:
     void saveData();
 
     //Variables --------------------------------------------------------------------------------------------------------
+
+    //Block ID
+    BlockIndex block_id;
     
     //Physic scene and composite body
     q3Scene* physic_scene = nullptr;

@@ -231,6 +231,9 @@
     <ClInclude Include="ButtonInterface.h">
       <Filter>LEGOComponent\UserInterface\UI Buttons\Button Interface</Filter>
     </ClInclude>
+    <ClInclude Include="BlockIndex.h">
+      <Filter>LEGOComponent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">

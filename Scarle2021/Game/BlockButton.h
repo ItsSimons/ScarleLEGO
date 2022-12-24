@@ -1,20 +1,15 @@
 ﻿#pragma once
+#include "BlockIndex.h"
 #include "ButtonInterface.h"
 
-/**
- * Templated button class.
- * The type given will be the block returned to the builder
- */
-template<class T>
 class BlockButton : public ButtonInterface
 {
 public:
-	BlockButton(const Vector2& bt_pos, ID3D11Device* _d3dDevice);
+	BlockButton(const Vector2& bt_pos, const BlockIndex& block_type, ID3D11Device* _d3dDevice);
 	~BlockButton() override;
 	
 	//Returns new building block
-	CustomBaseObject* setBlock(const Vector3& spawn_pos, ID3D11Device* _pd3dDevice, IEffectFactory* _EF,
-	                           q3Scene* _physic_scene, q3Body* _composite_body) override;
+	const BlockIndex& getBlockID() override;
 
 	//Scarle
 	void update(GameData* _GD, const Vector2& mouse_pos) override;
@@ -34,6 +29,7 @@ private:
 
 	Vector2 button_res = {0,0};
 	Vector2 button_pos = {0,0};
+	BlockIndex block_id;
 	
 	enum bt_color
 	{
@@ -44,6 +40,7 @@ private:
 	bt_color new_color = bt_white;
 	bool inside = false; //True if point was inside
 	bool block_set = false; //True if the new building block has already been returned
+	
 };
 
 // Inline methods ------------------------------------------------------------------------------------------------------
@@ -51,11 +48,11 @@ private:
 /**
  * \brief creates a UI block button at the specified position
  * \param bt_pos Position where the UI element will be located
+ * \param block_type Block ID of the block that will be created
  * \param _d3dDevice DX11 device
  */
-template <class T>
-BlockButton<T>::BlockButton(const Vector2& bt_pos, ID3D11Device* _d3dDevice)
-	: ButtonInterface(bt_pos, _d3dDevice)
+inline BlockButton::BlockButton(const Vector2& bt_pos, const BlockIndex& block_type, ID3D11Device* _d3dDevice)
+	: ButtonInterface(bt_pos, block_type, _d3dDevice), block_id(block_type)
 {
 	//Inits the background of the button
 	button_bg = new ImageGO2D("text_bg", _d3dDevice);
@@ -67,45 +64,34 @@ BlockButton<T>::BlockButton(const Vector2& bt_pos, ID3D11Device* _d3dDevice)
 	button_pos = bt_pos - button_res/2;
 	button_bg->SetPos(button_pos);
 	
-	//name of the button is found via class name
-	std::string bt_name = typeid(T).name();
-	bt_name.replace(0, 10, " ");
+	//name of the button is found via block id
+	const std::string bt_name = BlockAssembler::GetBlockName(block_id);
 	//Inits the button text
 	button_text = new TextGO2D(bt_name);
 	button_text->SetColour(Color((float*)&Colors::Black));
 	button_text->SetPos(button_pos);
 }
 
-template <class T>
-BlockButton<T>::~BlockButton()
+inline BlockButton::~BlockButton()
 {
 	delete button_bg;
 	delete button_text;
 }
 
 /**
- * \brief Takes a position and generates the corrent building block on the type specified
- * \param spawn_pos Location where the new building block will be located
- * \return pointer to new building block, nullptr if it failed
+ * \return Block ID of the button
  */
-template <class T>
-CustomBaseObject* BlockButton<T>::setBlock(const Vector3& spawn_pos, ID3D11Device* _pd3dDevice, IEffectFactory* _EF,
-                                        q3Scene* _physic_scene, q3Body* _composite_body)
+inline const BlockIndex& BlockButton::getBlockID()
 {
-	//Is cursor inside and block not set yet?
 	if(inside && !block_set)
 	{
 		block_set = true;
-		//Creates new building block using template
-		CustomBaseObject* new_block = new T(_pd3dDevice, _EF, _physic_scene, _composite_body);
-		new_block->SetPos(spawn_pos);
-		return new_block;
+		return block_id;
 	}
-	return nullptr;
+	return id_invalid;
 }
 
-template <class T>
-void BlockButton<T>::update(GameData* _GD, const Vector2& mouse_pos)
+inline void BlockButton::update(GameData* _GD, const Vector2& mouse_pos)
 {
 	//Color is changed if mouse is inside button
 	if(isInside(mouse_pos))
@@ -140,8 +126,7 @@ void BlockButton<T>::update(GameData* _GD, const Vector2& mouse_pos)
 	button_text->Tick(_GD);
 }
 
-template <class T>
-void BlockButton<T>::render(DrawData2D* _DD2D)
+inline void BlockButton::render(DrawData2D* _DD2D)
 {
 	button_bg->Draw(_DD2D);
 	button_text->Draw(_DD2D);
@@ -152,8 +137,7 @@ void BlockButton<T>::render(DrawData2D* _DD2D)
  * \param point Vector2 point 
  * \return true if the point is inside 
  */
-template <class T>
-bool BlockButton<T>::isInside(const Vector2& point) const
+inline bool BlockButton::isInside(const Vector2& point) const
 {
 	if(point.x >= button_pos.x && point.x <= (button_pos.x + button_res.x) &&
 	   point.y >= button_pos.y && point.y <= (button_pos.y + button_res.y))
@@ -166,8 +150,7 @@ bool BlockButton<T>::isInside(const Vector2& point) const
  * \brief sets a new pos for the UI button 
  * \param new_pos new button location
  */
-template <class T>
-void BlockButton<T>::setPos(const Vector2& new_pos)
+inline void BlockButton::setPos(const Vector2& new_pos)
 {
 	button_pos = new_pos - button_res/2;
 	button_bg->SetPos(button_pos);
@@ -177,8 +160,7 @@ void BlockButton<T>::setPos(const Vector2& new_pos)
 /**
  * \return Button's position at the centre
  */
-template <class T>
-const Vector2& BlockButton<T>::getPos()
+inline const Vector2& BlockButton::getPos()
 {
 	return button_pos;
 }
@@ -186,8 +168,7 @@ const Vector2& BlockButton<T>::getPos()
 /**
  * \return button's resolution in pixels
  */
-template <class T>
-const Vector2& BlockButton<T>::getRes()
+inline const Vector2& BlockButton::getRes()
 {
 	return button_res;
 }

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "iostream"
 #include "UserInterface.h"
+
+#include "BlockIndex.h"
 #include "Handler.h"
 
 UserInterface::UserInterface()
@@ -39,13 +41,15 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
     elements_UI.push_back(background);
 
     //UI buttons
-    //This is where newly added components are added
-    block_buttons_UI.push_back(new BlockButton<LEGOCube>(resolution/2, _d3dDevice));
-    block_buttons_UI.push_back(new BlockButton<LEGOWheel>(resolution/2, _d3dDevice));
-    block_buttons_UI.push_back(new BlockButton<LEGOSteeringWheel>(resolution/2, _d3dDevice));
-    block_buttons_UI.push_back(new BlockButton<LEGOThruster>(resolution/2, _d3dDevice));
-    block_buttons_UI.push_back(new BlockButton<LEGOWing>(resolution/2, _d3dDevice));
-
+    for (int EnumInt = id_invalid; EnumInt != id_last; EnumInt++)
+    {
+        if(EnumInt != id_invalid)
+        {
+            block_buttons_UI.push_back(new BlockButton(
+                resolution/2, static_cast<BlockIndex>(EnumInt), _d3dDevice));
+        }
+    }
+    
     //Places the buttons in a grid
     for (int i = 0; i < block_buttons_UI.size(); ++i)
     {
@@ -69,18 +73,18 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
     test_but = new LoadSaveButton(Vector2(game_res.x/2, game_res.y * 0.825f), _d3dDevice);
 }
 
-CustomBaseObject* UserInterface::getSelection(const Vector3& spawn_pos, ID3D11Device* _pd3dDevice, IEffectFactory* _EF,
-    q3Scene* _physic_scene, q3Body* _composite_body)
+const BlockIndex& UserInterface::getSelectionBlockID()
 {
     for (auto button : block_buttons_UI)
     {
-        CustomBaseObject* new_block = button->setBlock(spawn_pos, _pd3dDevice, _EF, _physic_scene, _composite_body);
-
-        if(new_block != nullptr)
-            return new_block;
+        BlockIndex return_id = button->getBlockID();
+        
+        if(return_id != id_invalid)
+        {
+            return return_id;
+        }
     }
-    
-    return nullptr;
+    return id_invalid;
 }
 
 void UserInterface::update(GameData* _GD)
