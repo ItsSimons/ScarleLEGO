@@ -85,9 +85,8 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_cam->SetPos(Vector3(0.0f, 200.0f, 200.0f));
     m_GameObjects.push_back(m_cam);
 
-    //add Player
+    //I'll leave the player un-ticked and un-rendered for the LEGO component.
     Player* pPlayer = new Player("BirdModelV1", m_d3dDevice.Get(), m_fxFactory);
-    m_GameObjects.push_back(pPlayer);
 
     //add a secondary camera
     m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 10.0f, 50.0f));
@@ -108,7 +107,7 @@ void Game::Initialize(HWND _window, int _width, int _height)
     }
 
     //Inits the lego component
-    m_legoComponent->initialize(m_windowResolution);
+    m_legoComponent->initialize(m_windowResolution, AR, m_cam, m_TPScam);
 }
 
 // Executes the basic game loop.
@@ -482,17 +481,4 @@ void Game::ReadInput()
 
     //Class the input reader on the lego component
     m_legoComponent->readInput();
-
-    //Changes camera
-    if (m_GD->m_KBS_tracker.pressed.Space)
-    {
-        if (m_GD->m_GS == GS_PLAY_MAIN_CAM)
-        {
-            m_GD->m_GS = GS_PLAY_TPS_CAM;
-        }
-        else
-        {
-            m_GD->m_GS = GS_PLAY_MAIN_CAM;
-        }
-    }
 }

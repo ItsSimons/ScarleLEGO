@@ -26,7 +26,7 @@ namespace LEGO
 						 ID3D11DeviceContext1* _d3dContext, IEffectFactory* _fxFactory);
 		~Handler();
 
-		void initialize(const Vector2& resolution);
+		void initialize(const Vector2& resolution, const float aspect_ration, Camera* cam, TPSCamera* TPScam);
 
 		void loadFromPath(const std::string& path);
 		void saveToPath(const std::string& path);

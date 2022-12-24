@@ -36,7 +36,7 @@ LEGO::Handler::~Handler()
 	delete physic_scene;
 }
 
-void LEGO::Handler::initialize(const Vector2& resolution)
+void LEGO::Handler::initialize(const Vector2& resolution, const float aspect_ration, Camera* cam, TPSCamera* TPScam)
 {
 	//User option to turn on debug mode
 	if(debug_mode)
@@ -85,7 +85,7 @@ void LEGO::Handler::initialize(const Vector2& resolution)
 	q3BodyDef composite_body_def;
 	composite_body_def.bodyType = eDynamicBody;
 	composite_body = physic_scene->CreateBody(composite_body_def);
-
+	
 	//Temporary
 	holding_obj = new LEGOStartingCube(d3dDevice, fxFactory, physic_scene, composite_body);
 	holding_obj->setID(id_LEGOStartingCube);
@@ -93,6 +93,10 @@ void LEGO::Handler::initialize(const Vector2& resolution)
 	scene_blocks.push_back(holding_obj);
 	holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
 	holding_obj->setID(id_LEGOCube);
+
+	//need to sort out cameronaa siuum
+	//delete TPScam;
+	//TPScam = new TPSCamera(0.25f * XM_PI, aspect_ration, 1.0f, 10000.0f, scene_blocks.front(), Vector3::UnitY, Vector3(0.0f, 10.0f, 50.0f));
 }
 
 void LEGO::Handler::loadFromPath(const std::string& path)
@@ -460,6 +464,19 @@ void LEGO::Handler::readInput()
 			//Deletes a specific one
 			delete scene_blocks[scene_blocks.size()-1];
 			scene_blocks.pop_back();
+		}
+	}
+	
+	//Changes camera
+	if (GD->m_KBS_tracker.pressed.Space)
+	{
+		if (GD->m_GS == GS_PLAY_MAIN_CAM)
+		{
+			GD->m_GS = GS_PLAY_TPS_CAM;
+		}
+		else
+		{
+			GD->m_GS = GS_PLAY_MAIN_CAM;
 		}
 	}
 	
