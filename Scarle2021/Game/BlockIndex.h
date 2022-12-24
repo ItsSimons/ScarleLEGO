@@ -26,7 +26,7 @@ enum BlockIndex
     id_last,
 };
 
-namespace BlockAssembler
+namespace BlockHelper
 {
     /**
      * \brief Takes in data and a type and return the requested block

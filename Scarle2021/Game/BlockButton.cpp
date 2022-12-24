@@ -21,7 +21,7 @@ BlockButton::BlockButton(const Vector2& bt_pos, const BlockIndex& block_type, ID
 	button_bg->SetPos(button_pos);
 	
 	//name of the button is found via block id
-	const std::string bt_name = BlockAssembler::GetBlockName(block_id);
+	const std::string bt_name = BlockHelper::GetBlockName(block_id);
 	//Inits the button text
 	button_text = new TextGO2D(bt_name);
 	button_text->SetColour(Color((float*)&Colors::Black));

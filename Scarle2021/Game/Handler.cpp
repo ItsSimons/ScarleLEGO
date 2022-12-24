@@ -117,7 +117,7 @@ void LEGO::Handler::loadFromPath(const std::string& path)
 				value["rotation"]["pitch"], value["rotation"]["yaw"], value["rotation"]["roll"]);
 			const BlockIndex block_id = value["type"];
 				
-			scene_blocks.push_back(BlockAssembler::MakeBlock(
+			scene_blocks.push_back(BlockHelper::MakeBlock(
 				block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body));
 			scene_blocks.back()->materialize();
 		}
@@ -420,7 +420,7 @@ void LEGO::Handler::readInput()
 			const Vector3 block_rot = holding_obj->GetPitchYawRoll();
 			delete holding_obj;
 			
-			holding_obj = BlockAssembler::MakeBlock(
+			holding_obj = BlockHelper::MakeBlock(
 				block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body);
 		}
 

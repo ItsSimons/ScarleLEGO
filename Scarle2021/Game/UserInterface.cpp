@@ -8,6 +8,8 @@ UserInterface::UserInterface()
 UserInterface::~UserInterface()
 {
     delete cursor;
+    delete indicator;
+    delete indicator_bg;
 
     for (auto element : elements_UI)
     {
@@ -45,6 +47,18 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
     background->SetPos(game_res / 2);
     elements_UI.push_back(background);
 
+    //Block indicator
+    //Base starting block should be a cube, there should be no downside in hard coding this
+    indicator = new TextGO2D("Current: Cube");
+    indicator->SetPos(Vector2(0, game_res.y - 64.f));
+    indicator->SetColour(Color((float*)&Colors::Black));
+    //bg
+    indicator_bg = new ImageGO2D("text_bg", _d3dDevice);
+    indicator_bg->SetOrigin(Vector2(0,0));
+    indicator_bg->SetColour(Color((float*)&Colors::White));
+    indicator_bg->SetPos(indicator->GetPos());
+    indicator_bg->SetScale(Vector2(17.f, 1.f));
+    
     //Iterates through the enums of blocks and creates and UI entry for each one of those, if not blacklisted
     //This to load new elements directly from the block index file
     for (int EnumInt = id_invalid; EnumInt != id_last; EnumInt++)
@@ -93,9 +107,12 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
 
 void UserInterface::toggleVisibilityUI()
 {
-    //Brings cursor back in the middle
-    cursor->SetPos(game_res/2);
-    visible = !visible;
+    if(!driving)
+    {
+        //Brings cursor back in the middle
+        cursor->SetPos(game_res/2);
+        visible = !visible;
+    }
 }
 
 //Scarle ---------------------------------------------------------------------------------------------------------------
@@ -129,6 +146,10 @@ void UserInterface::update(GameData* _GD)
     //Sets pos and updates the cursor
     cursor->SetPos(mouse_pos);
     cursor->Tick(_GD);
+
+    //ticks block indicator
+    indicator_bg->Tick(_GD);
+    indicator->Tick(_GD);
     
     for (const auto element : elements_UI)
     {
@@ -148,7 +169,15 @@ void UserInterface::update(GameData* _GD)
 
 void UserInterface::render(DrawData2D* _DD2D)
 {
-    if(!visible) return;
+    if(!visible)
+    {
+        if(!driving)
+        {
+            indicator_bg->Draw(_DD2D);
+            indicator->Draw(_DD2D);
+        }
+        return;
+    };
     
     for (const auto element : elements_UI)
     {
@@ -185,6 +214,14 @@ bool UserInterface::getVisibilityUI() const
 }
 
 /**
+ * \brief set driving mode bool
+ */
+void UserInterface::setDrivingMode(bool _driving)
+{
+    driving = _driving;
+}
+
+/**
  * \brief Checks all the block buttons to see if one has been pressed.
  * \return Returns block ID of pressed button
  */
@@ -198,7 +235,18 @@ const BlockIndex& UserInterface::getSelectionBlockID()
         
         if(return_id != id_invalid)
         {
+            //If a selection happened toggle UI
             toggleVisibilityUI();
+
+            //Gets pos and new block name
+            const auto indicator_pos = indicator->GetPos();
+            const std::string current_block_name = "Current: " + BlockHelper::GetBlockName(return_id); 
+
+            //Deletes old indicator and recreates it with new name
+            delete indicator;
+            indicator = new TextGO2D(current_block_name);
+            indicator->SetPos(indicator_pos);
+            indicator->SetColour(Color((float*)&Colors::Black));
             return return_id;
         }
     }
