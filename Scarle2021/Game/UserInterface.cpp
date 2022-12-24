@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "iostream"
 #include "UserInterface.h"
-
 #include "BlockIndex.h"
-#include "Handler.h"
+
 
 UserInterface::UserInterface()
 = default;
@@ -132,7 +131,7 @@ void UserInterface::render(DrawData2D* _DD2D)
 {
     for (auto element : elements_UI)
     {
-        element->Draw(_DD2D);
+        //element->Draw(_DD2D);
     }
 
     for (auto button : block_buttons_UI)
@@ -140,7 +139,7 @@ void UserInterface::render(DrawData2D* _DD2D)
         button->render(_DD2D);
     }
 
-    test_but->render(_DD2D);
+    //test_but->render(_DD2D);
     
     cursor->Draw(_DD2D);
 }

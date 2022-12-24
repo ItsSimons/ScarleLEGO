@@ -317,5 +317,8 @@
     <ClCompile Include="LoadSaveButton.cpp">
       <Filter>LEGOComponent\UserInterface\UI Buttons</Filter>
     </ClCompile>
+    <ClCompile Include="BlockButton.cpp">
+      <Filter>LEGOComponent\UserInterface\UI Buttons</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

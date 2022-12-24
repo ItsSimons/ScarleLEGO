@@ -88,21 +88,12 @@ void LEGO::Handler::initialize(const Vector2& resolution)
 
 	//Temporary
 	holding_obj = new LEGOStartingCube(d3dDevice, fxFactory, physic_scene, composite_body);
+	holding_obj->setID(id_LEGOStartingCube);
 	//Not textured?
 	holding_obj->materialize();
 	scene_blocks.push_back(holding_obj);
 	holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
-	
-	
-
-	std::ifstream f("..\\SaveData\\slot1.json");
-	json data = json::parse(f);
-	f.close();
-
-	for (auto value : data)
-	{
-		std::cout << value["position"]["x"] << std::endl;
-	}
+	holding_obj->setID(id_LEGOCube);
 }
 
 void LEGO::Handler::update()
@@ -236,7 +227,31 @@ void LEGO::Handler::update()
 		load = false;
 		loaded = true;
 
-		std::cout << "ran" << std::endl;
+		std::ifstream f("..\\SaveData\\slot1.json");
+		json data = json::parse(f);
+		f.close();
+
+		if(!data.empty())
+		{
+			while(!scene_blocks.empty())
+			{
+				delete scene_blocks.back();
+				scene_blocks.pop_back();
+			}
+			
+			for (auto value : data)
+			{
+				const Vector3 block_pos = Vector3(
+					value["position"]["x"], value["position"]["y"], value["position"]["z"]);
+				const Vector3 block_rot = Vector3(
+					value["rotation"]["pitch"], value["rotation"]["yaw"], value["rotation"]["roll"]);
+				const BlockIndex block_id = value["type"];
+				
+				scene_blocks.push_back(BlockAssembler::MakeBlock(
+					block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body));
+				scene_blocks.back()->materialize();
+			}
+		}
 	}
 
 	if(save && !saved)
@@ -265,7 +280,7 @@ void LEGO::Handler::update()
 						{"roll", block_rot.z},
 					}
 					},
-					{"Type", "wing"}
+					{"type", block->getID()}
 				}
 			);
 		}
@@ -393,8 +408,6 @@ void LEGO::Handler::readInput()
 			const Vector3 block_pos = holding_obj->GetPos();
 			const Vector3 block_rot = holding_obj->GetPitchYawRoll();
 			delete holding_obj;
-
-			std::cout << block_id << std::endl;
 			
 			holding_obj = BlockAssembler::MakeBlock(
 				block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body);

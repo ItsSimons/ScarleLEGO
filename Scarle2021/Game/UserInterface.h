@@ -1,4 +1,5 @@
 #pragma once
+
 #include "CustomBaseObject.h"
 #include "ObjectList.h"
 #include "BlockButton.h"
