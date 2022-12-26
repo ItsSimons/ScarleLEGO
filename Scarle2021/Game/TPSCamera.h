@@ -14,6 +14,9 @@ public:
 
 	virtual void Tick(GameData* _GD) override;
 
+private:
+	void ExtractPitchYawRollFromXMMatrix(float* flt_p_PitchOut, float* flt_p_YawOut, float* flt_p_RollOut, const DirectX::XMMATRIX* XMMatrix_p_Rotation);
+	
 protected:
 	GameObject*	m_targetObject; //I'm following this object
 	Vector3	m_dpos; //I'll lurk this far behind and away from it

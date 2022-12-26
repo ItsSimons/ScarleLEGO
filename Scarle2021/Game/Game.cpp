@@ -83,14 +83,12 @@ void Game::Initialize(HWND _window, int _width, int _height)
     //create a base camera
     m_cam = new Camera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
     m_cam->SetPos(Vector3(0.0f, 200.0f, 200.0f));
-    m_GameObjects.push_back(m_cam);
 
     //I'll leave the player un-ticked and un-rendered for the LEGO component.
     Player* pPlayer = new Player("BirdModelV1", m_d3dDevice.Get(), m_fxFactory);
 
     //add a secondary camera
     m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 10.0f, 50.0f));
-    m_GameObjects.push_back(m_TPScam);
 
     //create DrawData struct and populate its pointers
     m_DD = new DrawData;
@@ -102,12 +100,12 @@ void Game::Initialize(HWND _window, int _width, int _height)
     //Instantiates the LEGO component
     if (m_legoComponent == nullptr)
     {
-        m_legoComponent = std::make_unique<LEGO::Handler>(m_GD, m_DD, m_DD2D,
+        m_legoComponent = std::make_unique<LEGO::Handler>(AR, m_GD, m_DD, m_DD2D,
             m_d3dDevice.Get(), m_d3dContext.Get(), m_fxFactory);
     }
 
     //Inits the lego component
-    m_legoComponent->initialize(m_windowResolution, AR, m_cam, m_TPScam);
+    m_legoComponent->initialize(m_windowResolution);
 }
 
 // Executes the basic game loop.
@@ -145,6 +143,18 @@ void Game::Update(DX::StepTimer const& _timer)
     }
 
     ReadInput();
+
+    //Makes a new TPS camera if necessary
+    TPSCamera* new_TPScam = m_legoComponent->getNewTPScam();
+    if(new_TPScam != nullptr)
+    {
+        delete m_TPScam;
+        m_TPScam = new_TPScam;
+    }
+    
+    //Ticks cameras
+    m_cam->Tick(m_GD);
+    m_TPScam->Tick(m_GD);
     
     //update all objects
     for (list<GameObject*>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
@@ -183,7 +193,11 @@ void Game::Render()
 
     //update the constant buffer for the rendering of VBGOs
     VBGO::UpdateConstantBuffer(m_DD);
-
+    
+    //Render cameras
+    m_cam->Draw(m_DD);
+    m_TPScam->Draw(m_DD);
+    
     //Draw 3D Game Obejects
     for (list<GameObject*>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
     {

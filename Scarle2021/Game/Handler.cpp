@@ -2,9 +2,9 @@
 #include "pch.h"
 #include "Handler.h"
 
-LEGO::Handler::Handler(GameData* _GD, DrawData* _DD, DrawData2D* _DD2D, ID3D11Device* _d3dDevice,
-                       ID3D11DeviceContext1* _d3dContext, IEffectFactory* _fxFactory) : GD(_GD), DD(_DD), DD2D(_DD2D),
-                       d3dDevice(_d3dDevice), d3dContext(_d3dContext), fxFactory(_fxFactory)
+LEGO::Handler::Handler(float _AR, GameData* _GD, DrawData* _DD, DrawData2D* _DD2D, ID3D11Device* _d3dDevice,
+                       ID3D11DeviceContext1* _d3dContext, IEffectFactory* _fxFactory) : AR(_AR), GD(_GD), DD(_DD),
+					   DD2D(_DD2D), d3dDevice(_d3dDevice), d3dContext(_d3dContext), fxFactory(_fxFactory)
 {
 	//Sets the physic library to calculate steps with a 16.6667ms interval
 	//(as game is locked to 60fps, an accumulator is not needed)
@@ -36,7 +36,7 @@ LEGO::Handler::~Handler()
 	delete physic_scene;
 }
 
-void LEGO::Handler::initialize(const Vector2& resolution, const float aspect_ration, Camera* cam, TPSCamera* TPScam)
+void LEGO::Handler::initialize(const Vector2& resolution)
 {
 	//User option to turn on debug mode
 	if(debug_mode)
@@ -86,17 +86,218 @@ void LEGO::Handler::initialize(const Vector2& resolution, const float aspect_rat
 	composite_body_def.bodyType = eDynamicBody;
 	composite_body = physic_scene->CreateBody(composite_body_def);
 	
-	//Temporary
+	//Places the basic starting cube
 	holding_obj = new LEGOStartingCube(d3dDevice, fxFactory, physic_scene, composite_body);
 	holding_obj->setID(id_LEGOStartingCube);
 	holding_obj->materialize();
 	scene_blocks.push_back(holding_obj);
+	//Gives a cube as a starter building object
 	holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
 	holding_obj->setID(id_LEGOCube);
+}
 
-	//need to sort out cameronaa siuum
-	//delete TPScam;
-	//TPScam = new TPSCamera(0.25f * XM_PI, aspect_ration, 1.0f, 10000.0f, scene_blocks.front(), Vector3::UnitY, Vector3(0.0f, 10.0f, 50.0f));
+void LEGO::Handler::update()
+{
+	if(driving_mode)
+	{
+		//If in driving mode steps the physics scene
+		physic_scene->Step();
+	}
+	else
+	{
+		//Input handler
+		if(!input_queue.empty())
+		{
+			const auto current_pos = holding_obj->GetPos();
+
+			while(!input_queue.empty())
+			{
+				switch (input_queue.front())
+				{
+				case input_up:
+					holding_obj->SetPos(current_pos - Vector3(0,grid_movement,0));
+					break;
+
+				case input_down:
+					holding_obj->SetPos(current_pos + Vector3(0,grid_movement,0));
+					break;
+
+				case input_left:
+					holding_obj->SetPos(current_pos - Vector3(grid_movement,0,0));
+					break;
+
+				case input_right:
+					holding_obj->SetPos(current_pos + Vector3(grid_movement,0,0));
+					break;
+
+				case input_forward:
+					holding_obj->SetPos(current_pos - Vector3(0,0,grid_movement));
+					break;
+
+				case input_backward:
+					holding_obj->SetPos(current_pos + Vector3(0,0,grid_movement));
+					break;
+
+				case input_show_UI:
+					UI->toggleVisibilityUI();
+					break;
+
+				case input_interact:
+					tryPlacingBlock(current_pos);
+					break;
+
+				case input_rotate_yaw:
+					holding_obj->yawObject(true);
+					break;
+
+				case input_rotate_pitch:
+					holding_obj->pitchObject(true);
+					break;
+
+				case input_delete:
+					deleteLastPlacedBlock();
+					break;
+			
+				case input_select:
+					trySelectingFromUI();
+					break;
+			
+				case input_materialize:
+					materializeCompositeBody();
+					break;
+				}
+			
+				input_queue.pop();
+			}
+		}
+		//Ticks UI
+		UI->update(GD);
+		//Ticks the object being hold
+		holding_obj->Tick(GD);
+	}
+	
+	for(auto& block : scene_blocks)
+	{
+		block->Tick(GD);
+		if(driving_mode)
+			block->applyInputToBlock(GD, movement_vector);
+	}
+	
+	//Updates debug renderer
+	if(debug_mode)
+	{
+		debug_render->update(GD, physic_scene);
+	}
+}
+
+void LEGO::Handler::render()
+{
+	for (auto platform : scene_platforms)
+	{
+		platform->Draw(DD);
+	}
+
+	for(auto& block : scene_blocks)
+	{
+		block->Draw(DD);
+	}
+	
+	if(!driving_mode)
+	{
+		holding_obj->Draw(DD);
+		UI->render(DD2D);
+	}
+	
+	//Renders the debug nodes
+	if(debug_mode)
+	{
+		debug_render->render(DD);
+	}
+}
+
+void LEGO::Handler::readInput()
+{
+	if(driving_mode)
+	{
+		//WASD and SPACE movement vector
+		//W & S
+		if(!(GD->m_KBS.W && GD->m_KBS.S))
+		{
+			if(GD->m_KBS.W)
+			{
+				movement_vector.x = 1;
+			}
+			else if(GD->m_KBS.S)
+			{
+				movement_vector.x = -1;
+			}
+			else
+			{
+				movement_vector.x = 0;
+			}
+		}
+		else
+		{
+			movement_vector.x = 0;
+		}
+		//A & D
+		if(!(GD->m_KBS.A && GD->m_KBS.D))
+		{
+			if(GD->m_KBS.A)
+			{
+				movement_vector.y = -1;
+			}
+			else if(GD->m_KBS.D)
+			{
+				movement_vector.y = 1;
+			}
+			else
+			{
+				movement_vector.y = 0;
+			}
+		}
+		else
+		{
+			movement_vector.y = 0;
+		}
+		//Space & CTRL
+		if(!(GD->m_KBS.Space && GD->m_KBS.LeftControl))
+		{
+			if(GD->m_KBS.Space)
+			{
+				movement_vector.z = 1;
+			}
+			else if(GD->m_KBS.LeftControl)
+			{
+				movement_vector.z = -1;
+			}
+			else
+			{
+				movement_vector.z = 0;
+			}
+		}
+		else
+		{
+			movement_vector.z = 0;
+		}
+	}
+	else
+	{
+		//Building mode inputs
+		addToInputQueue(GD->m_KBS.W, input_forward);
+		addToInputQueue(GD->m_KBS.S, input_backward);
+		addToInputQueue(GD->m_KBS.A, input_left);
+		addToInputQueue(GD->m_KBS.D, input_right);
+		addToInputQueue(GD->m_KBS.Q, input_up);
+		addToInputQueue(GD->m_KBS.E, input_down);
+		addToInputQueue(GD->m_KBS.Tab, input_show_UI);
+		addToInputQueue(GD->m_KBS.Space, input_interact);
+		addToInputQueue(GD->m_KBS.R, input_rotate_yaw);
+		addToInputQueue(GD->m_KBS.T, input_rotate_pitch);
+		addToInputQueue(GD->m_KBS.Back, input_delete);
+		addToInputQueue(GD->m_MS.leftButton, input_select);
+		addToInputQueue(GD->m_KBS.Enter, input_materialize);
+	}
 }
 
 void LEGO::Handler::loadFromPath(const std::string& path)
@@ -161,450 +362,117 @@ void LEGO::Handler::saveToPath(const std::string& path)
 	file.close();
 }
 
-void LEGO::Handler::update()
+void LEGO::Handler::addToInputQueue(const bool& pressed, InputIndex button)
 {
-	//Updates the physic scene
-	//Pausing available by stopping step
-	if(step_physic_library){physic_scene->Step();}
-
-	UI->update(GD);
-	
-	auto current_pos = holding_obj->GetPos();
-
-	//Just movement done bad
-	if(arrows.y == 1 && !moved_y)
+	if(pressed)
 	{
-		holding_obj->SetPos(Vector3(current_pos.x, current_pos.y, current_pos.z - 5));
-		moved_y = true;
-	}
-	else if(arrows.y == -1 && !moved_y)
-	{
-		holding_obj->SetPos(Vector3(current_pos.x, current_pos.y, current_pos.z + 5));
-		moved_y = true;
-	}
-	if(arrows.x == 1 && !moved_x)
-	{
-		holding_obj->SetPos(Vector3(current_pos.x - 5, current_pos.y, current_pos.z));
-		moved_x = true;
-	}
-	else if(arrows.x == -1 && !moved_x)
-	{
-		holding_obj->SetPos(Vector3(current_pos.x + 5, current_pos.y, current_pos.z));
-		moved_x = true;
-	}
-	if(arrows.z == 1 && !moved_z)
-	{
-		holding_obj->SetPos(Vector3(current_pos.x, current_pos.y + 5, current_pos.z));
-		moved_z = true;
-	}
-	else if(arrows.z == -1 && !moved_z)
-	{
-		holding_obj->SetPos(Vector3(current_pos.x, current_pos.y - 5, current_pos.z));
-		moved_z = true;
-	}
-
-	//Placing a block
-	if(placing && !place)
-	{
-		place = true;
-		placing = false;
-
-		//Actually placing 
-		if(holding_obj->place())
+		if(!input_pressed[button])
 		{
-			//Saves block to render
-			scene_blocks.push_back(holding_obj);
-
-			//next object that will be used
-			switch (current_object)
-			{
-			case 0:
-				holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
-				holding_obj->SetPos(current_pos);
-				break;
-			case 1:
-				holding_obj = new LEGOThruster(d3dDevice, fxFactory, physic_scene, composite_body);
-				holding_obj->SetPos(current_pos);
-				break;
-			case 2:
-				holding_obj = new LEGOWing(d3dDevice, fxFactory, physic_scene, composite_body);
-				holding_obj->SetPos(current_pos);
-				break;
-			case 3:
-				holding_obj = new LEGOWheel(d3dDevice, fxFactory, physic_scene, composite_body);
-				holding_obj->SetPos(current_pos);
-				break;
-			}
+			input_queue.push(button);
+			input_pressed[button] = true;
 		}
 	}
-
-	//This is rotation, why the fuck did i call it make???
-	if(made && !make)
+	else
 	{
-		make = true;
-		made = false;
-
-		switch (rotator)
+		if(input_pressed[button])
 		{
-		case 0:
-			holding_obj->yawObject(true);
-			break;
-		case 1:
-			holding_obj->pitchObject(true);
-			break;
+			input_pressed[button] = false;
 		}
-	}
-
-	//Switches the block being hold
-	if(made2 && !make2)
-	{
-		make2 = true;
-		made2 = false;
-
-		const auto& current_pos = holding_obj->GetPos();
-		switch (current_object)
-		{
-		case 0:
-			delete holding_obj;
-			holding_obj = new LEGOCube(d3dDevice, fxFactory, physic_scene, composite_body);
-			holding_obj->SetPos(current_pos);
-			break;
-		case 1:
-			delete holding_obj;
-			holding_obj = new LEGOWheel(d3dDevice, fxFactory, physic_scene, composite_body);
-			holding_obj->SetPos(current_pos);
-			break;
-		case 2:
-			delete holding_obj;
-			holding_obj = new LEGOSteeringWheel(d3dDevice, fxFactory, physic_scene, composite_body);
-			holding_obj->SetPos(current_pos);
-			break;
-		case 3:
-			delete holding_obj;
-			holding_obj = new LEGOThruster(d3dDevice, fxFactory, physic_scene, composite_body);
-			holding_obj->SetPos(current_pos);
-			break;
-		}
-	}
-
-	if(load && !loaded)
-	{
-		load = false;
-		loaded = true;
-
-		UI->toggleVisibilityUI();
-	}
-
-	if(save && !saved)
-	{
-		save = false;
-		saved = true;
-
-
-	}
- 	
-	//Ticks the object being hold
-	holding_obj->Tick(GD);
-	
-	for(auto& block : scene_blocks)
-	{
-		block->Tick(GD);
-		//This should be what makes the magic happen
-	}
-	if(step_physic_library)
-		for(auto& block : scene_blocks)
-		{
-			block->applyInputToBlock(GD, input_vector);
-		}
-	
-	//Updates debug renderer
-	if(debug_mode)
-	{
-		debug_render->update(GD, physic_scene);
 	}
 }
 
-void LEGO::Handler::render()
+void LEGO::Handler::tryPlacingBlock(const Vector3& block_pos)
 {
-	UI->render(DD2D);
-	
-	for (auto platform : scene_platforms)
+	//Actually placing 
+	if(holding_obj->place())
 	{
-		platform->Draw(DD);
-	}
-	
-	for(auto& block : scene_blocks)
-	{
-		block->Draw(DD);
-	}
+		//Object has been placed correctly, get ID and save it
+		const BlockIndex& block_id = holding_obj->getID();
+		const Vector3& block_rot = holding_obj->GetPitchYawRoll();
+		scene_blocks.push_back(holding_obj);
 
-	holding_obj->Draw(DD);	
-	
-	//Renders the debug nodes
-	if(debug_mode)
-	{
-		debug_render->render(DD);
+		//Creates a new identical object in hand
+		holding_obj = BlockHelper::MakeBlock(
+			block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body);
 	}
 }
 
-void LEGO::Handler::readInput()
+void LEGO::Handler::deleteLastPlacedBlock()
 {
-	//WASD and SPACE movement vector
-	//W & S
-	if(!(GD->m_KBS.W && GD->m_KBS.S))
+	if(scene_blocks.size() > 1)
 	{
-		if(GD->m_KBS.W)
-		{
-			input_vector.x = 1;
-		}
-		else if(GD->m_KBS.S)
-		{
-			input_vector.x = -1;
-		}
-		else
-		{
-			input_vector.x = 0;
-		}
+		//Deletes last placed block
+		delete scene_blocks.back();
+		scene_blocks.pop_back();
 	}
-	else
-	{
-		input_vector.x = 0;
-	}
-	//A & D
-	if(!(GD->m_KBS.A && GD->m_KBS.D))
-	{
-		if(GD->m_KBS.A)
-		{
-			input_vector.y = -1;
-		}
-		else if(GD->m_KBS.D)
-		{
-			input_vector.y = 1;
-		}
-		else
-		{
-			input_vector.y = 0;
-		}
-	}
-	else
-	{
-		input_vector.y = 0;
-	}
-	//Space & CTRL
-	if(!(GD->m_KBS.Space && GD->m_KBS.LeftControl))
-	{
-		if(GD->m_KBS.Space)
-		{
-			input_vector.z = 1;
-		}
-		else if(GD->m_KBS.LeftControl)
-		{
-			input_vector.z = -1;
-		}
-		else
-		{
-			input_vector.z = 0;
-		}
-	}
-	else
-	{
-		input_vector.z = 0;
-	}
+}
 
-	//gets selection?
-	if(GD->m_MS.leftButton)
-	{
-		const BlockIndex block_id = UI->getSelectionBlockID();
-		const std::string save_path = UI->tryGetSavePath();
-		const std::string load_path = UI->tryGetLoadPath();
+void LEGO::Handler::trySelectingFromUI()
+{
+	const BlockIndex block_id = UI->getSelectionBlockID();
+	const std::string save_path = UI->tryGetSavePath();
+	const std::string load_path = UI->tryGetLoadPath();
 
-		if(block_id != id_invalid)
-		{
-			const Vector3 block_pos = holding_obj->GetPos();
-			const Vector3 block_rot = holding_obj->GetPitchYawRoll();
-			delete holding_obj;
+	if(block_id != id_invalid)
+	{
+		const Vector3 block_pos = holding_obj->GetPos();
+		const Vector3 block_rot = holding_obj->GetPitchYawRoll();
+		delete holding_obj;
 			
-			holding_obj = BlockHelper::MakeBlock(
-				block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body);
-		}
-
-		if(save_path != "null" && !save_path.empty())
-		{
-			//saving here
-			saveToPath(save_path);
-			//std::cout << save_path << std::endl;
-		}
-
-		if(load_path != "null" && !load_path.empty())
-		{
-			//loading here
-			loadFromPath(load_path);
-			//std::cout << load_path << std::endl;
-		}
+		holding_obj = BlockHelper::MakeBlock(
+			block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body);
 	}
+
+	if(save_path != "null" && !save_path.empty())
+	{
+		//saving here
+		saveToPath(save_path);
+	}
+
+	if(load_path != "null" && !load_path.empty())
+	{
+		//loading here
+		loadFromPath(load_path);
+	}
+}
+
+void LEGO::Handler::materializeCompositeBody()
+{
+	driving_mode = true;
+	UI->setDrivingMode(driving_mode);
+
+	Vector3 offset_pos = Vector3(10,60,80);
+	Vector3 farthest_pos = Vector3(0,0,0);
 	
-	//THE MOST UTTERLY RETARDED WAY OF INPUT EVER
-	//Afterall, this is for testing
-	if(GD->m_KBS.Z)
+	for (const auto& block : scene_blocks)
 	{
-		composite_body->SetAngularVelocity(q3Vec3(1,1,1));
+		Vector3 block_pos = block->GetPos();
+
+		block_pos = Vector3(abs(block_pos.x), abs(block_pos.y), abs(block_pos.z));
+
+		if(block_pos.x > farthest_pos.x)
+			farthest_pos.x = block_pos.x;
+		if(block_pos.y > farthest_pos.y)
+			farthest_pos.y = block_pos.y;
+		if(block_pos.z > farthest_pos.z)
+			farthest_pos.z = block_pos.z;
 	}
 
-	if(GD->m_KBS.X)
-	{
-		
-		step_physic_library = true;
-	}
-
-
-	if(GD->m_KBS.V)
-	{
-		if(scene_blocks.size() > 1)
-		{
-			//Deletes a specific one
-			delete scene_blocks[scene_blocks.size()-1];
-			scene_blocks.pop_back();
-		}
-	}
+	farthest_pos = (farthest_pos * 1.15f) + offset_pos;
 	
-	//Changes camera
-	if (GD->m_KBS_tracker.pressed.Space)
-	{
-		if (GD->m_GS == GS_PLAY_MAIN_CAM)
-		{
-			GD->m_GS = GS_PLAY_TPS_CAM;
-		}
-		else
-		{
-			GD->m_GS = GS_PLAY_MAIN_CAM;
-		}
-	}
-	
-	///VERY VERY TEMPORARY 
-	//Very temporary direction
-	if(GD->m_KBS.Up)
-	{
-		arrows.y = 1;
-	}
-	else if(GD->m_KBS.Down)
-	{
-		arrows.y = -1;
-	}
-	else
-	{
-		moved_y = false;
-		arrows.y = 0;
-	}
+	new_TPScam = new TPSCamera(
+		0.25f * XM_PI, AR, 1.0f, 10000.0f, scene_blocks.front(),
+		Vector3::UnitY, Vector3(0.0f, farthest_pos.y, farthest_pos.z));
+	GD->m_GS = GS_PLAY_TPS_CAM;
+}
 
-	if(GD->m_KBS.Left)
+TPSCamera* LEGO::Handler::getNewTPScam()
+{
+	if(new_TPScam != nullptr)
 	{
-		arrows.x = 1;
+		TPSCamera* temp_ptr = new_TPScam;
+		new_TPScam = nullptr;
+		return temp_ptr;
 	}
-	else if(GD->m_KBS.Right)
-	{
-		arrows.x = -1;
-	}
-	else
-	{
-		moved_x = false;
-		arrows.x = 0;
-	}
-
-	if(GD->m_KBS.Enter)
-	{
-        
-		placing = true;
-	}
-	else
-	{
-		place = false;
-		placing = false;
-	}
-
-	if(GD->m_KBS.NumPad7)
-	{
-		arrows.z = 1;
-	}
-	else if(GD->m_KBS.NumPad1)
-	{
-		arrows.z = -1;
-	}
-	else
-	{
-		moved_z = false;
-		arrows.z = 0;
-	}
-
-	if(GD->m_KBS.T)
-	{
-		made = true;
-	}
-	else
-	{
-		make = false;
-		made = false;
-	}
-
-	//temporary loading
-	if(GD->m_KBS.O)
-	{
-		load = true;
-	}
-	else
-	{
-		load = false;
-		loaded = false;
-	}
-	//Temporary saving 
-	if(GD->m_KBS.P)
-	{
-		save = true;
-	}
-	else
-	{
-		save = false;
-		saved = false;
-	}
-	
-	//diocane
-	if(GD->m_KBS.NumPad2)
-	{
-		rotator = 0;
-	}
-	if(GD->m_KBS.NumPad5)
-	{
-		rotator = 1;
-	}
-	if(GD->m_KBS.NumPad8)
-	{
-		rotator = 2;
-	}
-
-	//diocane
-	if(GD->m_KBS.NumPad9)
-	{
-		current_object = 0;
-	}
-	if(GD->m_KBS.NumPad6)
-	{
-		current_object = 1;
-	}
-	if(GD->m_KBS.NumPad3)
-	{
-		current_object = 2;
-	}
-	if(GD->m_KBS.Q)
-	{
-		current_object = 3;
-	}
-
-	if(GD->m_KBS.M)
-	{
-		made2 = true;
-	}
-	else
-	{
-		make2 = false;
-		made2 = false;
-	}
+	return nullptr;
 }
