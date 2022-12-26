@@ -1,6 +1,5 @@
 #pragma once
 #include <queue>
-#include <iostream>
 
 //Scarle Headers
 #include "GameData.h"
@@ -21,7 +20,8 @@
 namespace LEGO
 {
 	using json = nlohmann::json;
-	
+
+	//Input mapping enumeration
 	enum InputIndex
 	{
 		input_up,
@@ -39,6 +39,9 @@ namespace LEGO
 		input_materialize
 	};
 	
+	/**
+	 * \brief Main class if the LEGO component
+	 */
 	class Handler
 	{
 	public:
@@ -47,9 +50,7 @@ namespace LEGO
 		~Handler();
 
 		void initialize(const Vector2& resolution);
-
 		
-
 		//Scarle
 		void update();
 		void render();
@@ -59,17 +60,21 @@ namespace LEGO
 		TPSCamera* getNewTPScam();
 
 	private:
+		//Input handling
+		void addToInputQueue(const bool& pressed, InputIndex button);
+		
+		//UI selection
+		void trySelectingFromUI();
+		
+		//Load & Saving
 		void loadFromPath(const std::string& path);
 		void saveToPath(const std::string& path);
 		
-		void addToInputQueue(const bool& pressed, InputIndex button);
-
+		//Placing & removing
 		void tryPlacingBlock(const Vector3& block_pos);
-
 		void deleteLastPlacedBlock();
-
-		void trySelectingFromUI();
-
+		
+		//Materializes 
 		void materializeCompositeBody();
 		
 		//Scarle and DX11 pointers
@@ -91,30 +96,22 @@ namespace LEGO
 
 		//User Interface
 		std::unique_ptr<UserInterface> UI{};
-
-		//WASD and SPACE movement
-		Vector3 movement_vector = Vector3::Zero;
-
-		//TPS camera return
-		TPSCamera* new_TPScam = nullptr;
+		float AR; //Aspect Ratio
 		
-		//Cose belle
-		std::vector<CustomBaseObject*> scene_blocks{};
+		//Scene and vehicle data
 		std::vector<LEGOPlatform*> scene_platforms{};
-
-		//test cuboidi
+		std::vector<CustomBaseObject*> composite_body_assembly{};
 		CustomBaseObject* holding_obj = nullptr;
-
-
-		float AR;
-		
-		float grid_movement = 5;
+		TPSCamera* new_TPScam = nullptr; //TPS camera return
+		float grid_movement = 5; //movement in building mode, in pixels
 		bool driving_mode = false;
 
-
-		
+		//Input handling
 		std::map<InputIndex, bool> input_pressed{};
 		std::queue<InputIndex> input_queue{};
+
+		//Directional movement (driving mode)
+		Vector3 movement_vector = Vector3::Zero;
 	};
 }
 
