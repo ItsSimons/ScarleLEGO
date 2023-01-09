@@ -234,6 +234,9 @@
     <ClInclude Include="BlockIndex.h">
       <Filter>LEGOComponent</Filter>
     </ClInclude>
+    <ClInclude Include="UIText.h">
+      <Filter>LEGOComponent\UserInterface\UI Buttons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -318,6 +321,9 @@
       <Filter>LEGOComponent\UserInterface\UI Buttons</Filter>
     </ClCompile>
     <ClCompile Include="BlockButton.cpp">
+      <Filter>LEGOComponent\UserInterface\UI Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="UIText.cpp">
       <Filter>LEGOComponent\UserInterface\UI Buttons</Filter>
     </ClCompile>
   </ItemGroup>

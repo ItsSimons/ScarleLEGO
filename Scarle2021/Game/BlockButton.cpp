@@ -8,7 +8,7 @@
  * \param _d3dDevice DX11 device
  */
 BlockButton::BlockButton(const Vector2& bt_pos, const BlockIndex& block_type, ID3D11Device* _d3dDevice)
-	: ButtonInterface(bt_pos, block_type, _d3dDevice), block_id(block_type)
+	: block_id(block_type)
 {
 	//Inits the background of the button
 	button_bg = new ImageGO2D("text_bg", _d3dDevice);
@@ -126,7 +126,7 @@ const Vector2& BlockButton::getRes()
 /**
  * \return Block ID of the button
  */
-const BlockIndex BlockButton::getBlockID()
+const BlockIndex& BlockButton::getBlockID()
 {
 	if(inside && !block_set)
 	{

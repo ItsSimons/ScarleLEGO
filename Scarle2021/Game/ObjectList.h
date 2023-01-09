@@ -31,3 +31,6 @@
 //Sounds
 #include "TestSound.h"
 #include "Loop.h"
+
+//LEGO main object
+#include "CustomBaseObject.h"

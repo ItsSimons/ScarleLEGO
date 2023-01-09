@@ -2,6 +2,8 @@
 #include "pch.h"
 #include "Handler.h"
 
+#include <iostream>
+
 /**
  * \brief Class to include in Scarle for the LEGO component
  * \param _AR Aspect Ratio
@@ -136,26 +138,32 @@ void LEGO::Handler::update()
 				{
 				case input_up:
 					holding_obj->SetPos(current_pos - Vector3(0,grid_movement,0));
+					isBlockPlaceable();
 					break;
 
 				case input_down:
 					holding_obj->SetPos(current_pos + Vector3(0,grid_movement,0));
+					isBlockPlaceable();
 					break;
 
 				case input_left:
 					holding_obj->SetPos(current_pos - Vector3(grid_movement,0,0));
+					isBlockPlaceable();
 					break;
 
 				case input_right:
 					holding_obj->SetPos(current_pos + Vector3(grid_movement,0,0));
+					isBlockPlaceable();
 					break;
 
 				case input_forward:
 					holding_obj->SetPos(current_pos - Vector3(0,0,grid_movement));
+					isBlockPlaceable();
 					break;
 
 				case input_backward:
 					holding_obj->SetPos(current_pos + Vector3(0,0,grid_movement));
+					isBlockPlaceable();
 					break;
 
 				case input_show_UI:
@@ -483,13 +491,25 @@ void LEGO::Handler::saveToPath(const std::string& path)
 // Placing & Removing --------------------------------------------------------------------------------------------------
 
 /**
+ * \brief checks if in the current position the block being held is placeable
+ */
+void LEGO::Handler::isBlockPlaceable()
+{
+	//Checks if a block is placeable and saves the outcome 
+	placeable = !holding_obj->checkAndPlace(false);
+	UI->setPlaceable(placeable, false);
+}
+
+/**
  * \brief On call tries to place and materialize the current holding OBJ in the physic world
  * \param block_pos position to be placed to
  */
 void LEGO::Handler::tryPlacingBlock(const Vector3& block_pos)
 {
-	//Actually placing 
-	if(holding_obj->place())
+	if(!placeable) return;
+	
+	//Collisions gets checked a second time, just to make sure illegal placing is not happening
+	if(holding_obj->checkAndPlace(true))
 	{
 		//Object has been placed correctly, get ID and save it
 		const BlockIndex& block_id = holding_obj->getID();
@@ -499,6 +519,9 @@ void LEGO::Handler::tryPlacingBlock(const Vector3& block_pos)
 		//Creates a new identical object in hand to build with
 		holding_obj = BlockHelper::MakeBlock(
 			block_pos, block_rot, block_id, d3dDevice, fxFactory, physic_scene, composite_body);
+
+		//Shows in the UI that the block has been placed
+		UI->setPlaceable(true, true);
 	}
 }
 

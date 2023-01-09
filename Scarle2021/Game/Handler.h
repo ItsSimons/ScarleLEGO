@@ -70,7 +70,8 @@ namespace LEGO
 		void loadFromPath(const std::string& path);
 		void saveToPath(const std::string& path);
 		
-		//Placing & removing
+		//Placing, collisions & removing
+		void isBlockPlaceable();
 		void tryPlacingBlock(const Vector3& block_pos);
 		void deleteLastPlacedBlock();
 		
@@ -104,6 +105,7 @@ namespace LEGO
 		CustomBaseObject* holding_obj = nullptr;
 		TPSCamera* new_TPScam = nullptr; //TPS camera return
 		float grid_movement = 5; //movement in building mode, in pixels
+		bool placeable = false;
 		bool driving_mode = false;
 
 		//Input handling

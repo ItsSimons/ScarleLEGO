@@ -7,14 +7,11 @@ UserInterface::UserInterface()
 
 UserInterface::~UserInterface()
 {
+    delete background_UI;
     delete cursor;
     delete indicator;
-    delete indicator_bg;
-
-    for (auto element : elements_UI)
-    {
-        delete element;
-    }
+    delete placing_feedback;
+    
     for (auto button : block_buttons_UI)
     {
         delete button;
@@ -43,21 +40,14 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
     cursor_res = cursor->GetRes();
 
     //background
-    ImageGO2D* background = new ImageGO2D("background_UI", _d3dDevice);
-    background->SetPos(game_res / 2);
-    elements_UI.push_back(background);
+    background_UI = new ImageGO2D("background_UI", _d3dDevice);
+    background_UI->SetPos(game_res / 2);
 
-    //Block indicator
-    //Base starting block should be a cube, there should be no downside in hard coding this
-    indicator = new TextGO2D("Current: Cube");
-    indicator->SetPos(Vector2(0, game_res.y - 64.f));
-    indicator->SetColour(Color((float*)&Colors::Black));
-    //bg
-    indicator_bg = new ImageGO2D("text_bg", _d3dDevice);
-    indicator_bg->SetOrigin(Vector2(0,0));
-    indicator_bg->SetColour(Color((float*)&Colors::White));
-    indicator_bg->SetPos(indicator->GetPos());
-    indicator_bg->SetScale(Vector2(17.f, 1.f));
+    //Block indicator, defaults to cube
+    indicator = new UIText("Current: Cube", Vector2(0, game_res.y - 64.f), _d3dDevice);
+    //Shows if a block is placeable or not
+    placing_feedback = new UIText("Not Placeable", Vector2(0, game_res.y - 128.f), _d3dDevice);
+    placing_feedback->setBgColor((float*)&Colors::Red);
     
     //Iterates through the enums of blocks and creates and UI entry for each one of those, if not blacklisted
     //This to load new elements directly from the block index file
@@ -143,19 +133,14 @@ void UserInterface::update(GameData* _GD)
     {
         mouse_pos.y = game_res.y - cursor_res.y * cursor_scale.y;
     }
-    //Sets pos and updates the cursor
+    
+    background_UI->Tick(_GD);
     cursor->SetPos(mouse_pos);
     cursor->Tick(_GD);
-
-    //ticks block indicator
-    indicator_bg->Tick(_GD);
-    indicator->Tick(_GD);
+    indicator->update(_GD, mouse_pos);
+    placing_feedback->update(_GD, mouse_pos);
     
-    for (const auto element : elements_UI)
-    {
-        element->Tick(_GD);
-    }
-
+    
     for (const auto button : block_buttons_UI)
     {
         button->update(_GD, mouse_pos);
@@ -173,16 +158,14 @@ void UserInterface::render(DrawData2D* _DD2D)
     {
         if(!driving)
         {
-            indicator_bg->Draw(_DD2D);
-            indicator->Draw(_DD2D);
+            indicator->render(_DD2D);
+            placing_feedback->render(_DD2D);
         }
         return;
     };
     
-    for (const auto element : elements_UI)
-    {
-        element->Draw(_DD2D);
-    }
+    background_UI->Draw(_DD2D);
+    
     for (const auto button : block_buttons_UI)
     {
         button->render(_DD2D);
@@ -195,7 +178,32 @@ void UserInterface::render(DrawData2D* _DD2D)
     cursor->Draw(_DD2D);
 }
 
+
 // Getters & Setters ---------------------------------------------------------------------------------------------------
+
+/**
+ * \brief Sets the placeable UI element to display if a block is placeable or not
+ */
+void UserInterface::setPlaceable(bool _placeable, bool _placed) const
+{
+    if(_placed)
+    {
+        placing_feedback->setText("Placed");
+        placing_feedback->setBgColor((float*)&Colors::White);
+        return;
+    }
+    
+    if(_placeable)
+    {
+        placing_feedback->setText("Placeable");
+        placing_feedback->setBgColor((float*)&Colors::Green);
+    }
+    else
+    {
+        placing_feedback->setText("Not Placeable");
+        placing_feedback->setBgColor((float*)&Colors::Red);
+    }
+}
 
 /**
  * \brief Updates the visibility of the UI
@@ -238,15 +246,11 @@ const BlockIndex& UserInterface::getSelectionBlockID()
             //If a selection happened toggle UI
             toggleVisibilityUI();
 
-            //Gets pos and new block name
-            const auto indicator_pos = indicator->GetPos();
+            //Gets new block name
             const std::string current_block_name = "Current: " + BlockHelper::GetBlockName(return_id); 
 
-            //Deletes old indicator and recreates it with new name
-            delete indicator;
-            indicator = new TextGO2D(current_block_name);
-            indicator->SetPos(indicator_pos);
-            indicator->SetColour(Color((float*)&Colors::Black));
+            //Renames indicator
+            indicator->setText(current_block_name);
             return return_id;
         }
     }
@@ -257,7 +261,7 @@ const BlockIndex& UserInterface::getSelectionBlockID()
  * \brief Checks all the Save buttons to see if one has been pressed.
  * \return Path of file to save to
  */
-std::string UserInterface::tryGetSavePath() 
+std::string UserInterface::tryGetSavePath() const
 {
     if(!visible) return "null";
     

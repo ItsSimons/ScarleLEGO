@@ -1,5 +1,7 @@
 #pragma once
+
 #include "BlockButton.h"
+#include "UIText.h"
 #include "LoadSaveButton.h"
 
 class UserInterface
@@ -16,28 +18,32 @@ public:
     void render(DrawData2D* _DD2D);
 
     //Getters & setters
+    void setPlaceable(bool _placeable, bool _placed) const;
     void setVisibilityUI(bool _visible);
     bool getVisibilityUI() const;
     void setDrivingMode(bool _driving);
     const BlockIndex& getSelectionBlockID();
-    std::string tryGetSavePath();
+    std::string tryGetSavePath() const;
     std::string tryGetLoadPath();
 
 private:
     Vector2 game_res = {0, 0};
     bool visible = false;
     bool driving = false;
-    
+
+    //bg
+    GameObject2D* background_UI = nullptr;
+    //Cursor data 
     ImageGO2D* cursor = nullptr;
     Vector2 cursor_scale = {0,0};
     Vector2 cursor_res = {0,0};
     float cursor_speed = 3.f;
-
-    ImageGO2D* indicator_bg = nullptr;
-    TextGO2D* indicator = nullptr;
+    //Indicator
+    UIText* indicator = nullptr;
+    //Placeable feedback
+    UIText* placing_feedback = nullptr;
     
-    std::vector<GameObject2D*> elements_UI{};
-    std::vector<ButtonInterface*> block_buttons_UI{};
+    std::vector<BlockButton*> block_buttons_UI{};
     std::vector<LoadSaveButton*> save_points_UI{};
 };
 

@@ -16,18 +16,13 @@ public:
 	void setPos(const Vector2& new_pos) override;
 	const Vector2& getPos() override;
 	const Vector2& getRes() override;
-	const BlockIndex getBlockID() override; //Returns new building block id
+	const BlockIndex& getBlockID(); //Returns new building block id
 
 private:
 	//Bounds check
 	bool isInside(const Vector2& point) const;
-	
-	ImageGO2D* button_bg = nullptr;
-	TextGO2D* button_text = nullptr;
-	
-	Vector2 button_res = {0,0};
-	Vector2 button_pos = {0,0};
-	BlockIndex block_id; // block id hold by the button
+	//Which block will be give from this button?
+	BlockIndex block_id;
 	
 	enum bt_color
 	{

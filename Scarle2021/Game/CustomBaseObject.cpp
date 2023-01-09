@@ -176,9 +176,10 @@ void CustomBaseObject::deMaterialize()
  * Checks collision and proximity to other blocks to determine if a block is placeable
  * If it is, materialises the block in place
  */
-bool CustomBaseObject::place()
+bool CustomBaseObject::checkAndPlace(const bool place)
 {
-    //Materialises the item 
+    //Materialisizng the item is necessary as the physics library needs a reference of the block to see if its
+    //intersecting other blocks
     materialize();
 
     //Creates an AABB object
@@ -193,6 +194,9 @@ bool CustomBaseObject::place()
     const q3Vec3 dummy_extents_z =
         {object_extents.x, object_extents.y, object_extents.z + extents_offset};
 
+    //Saves result
+    bool colliding = true;
+    
     //check inside and outside collisions
     if(checkInsideCollisions(AABB_object, collision_report))
     {
@@ -200,15 +204,28 @@ bool CustomBaseObject::place()
             checkOutsideCollisions(AABB_object, collision_report, dummy_extents_y) ||
             checkOutsideCollisions(AABB_object, collision_report, dummy_extents_z))
         {
-            delete collision_report;
-            return true;
+            colliding = false;
         }
     }
-
-    //If the object is not placeable in the physic world delete it
-    deMaterialize();
     delete collision_report;
-    return false;
+
+    //Block is placed only if place value is true. this is to use this
+    //function also for the only purpose to check collisions
+    if(place)
+    {
+        if(!colliding)
+        {
+            return true;
+        }
+        
+        //If the object is not placeable in the physic world deletes it
+        deMaterialize();
+        return false;
+    }
+
+    //this will be used just for a collision check, so dematerialize block 
+    deMaterialize();
+    return colliding;
 }
 
 // Collision Check -----------------------------------------------------------------------------------------------------

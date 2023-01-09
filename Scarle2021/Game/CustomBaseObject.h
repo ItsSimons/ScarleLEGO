@@ -27,7 +27,7 @@ public:
     //Placing & Removing
     void materialize();
     void deMaterialize();
-    bool place();
+    bool checkAndPlace(const bool place);
     
     //Force Handling
     virtual void applyInputToBlock(GameData* _GD, const Vector3& input_vector);
