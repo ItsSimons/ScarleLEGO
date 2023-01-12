@@ -176,18 +176,22 @@ void LEGO::Handler::update()
 
 				case input_rotate_yaw:
 					holding_obj->yawObject(true);
+					isBlockPlaceable();
 					break;
 
 				case input_rotate_pitch:
 					holding_obj->pitchObject(true);
+					isBlockPlaceable();
 					break;
 
 				case input_delete:
 					deleteLastPlacedBlock();
+					isBlockPlaceable();
 					break;
 			
 				case input_select:
 					trySelectingFromUI();
+					isBlockPlaceable();
 					break;
 			
 				case input_materialize:
@@ -231,11 +235,12 @@ void LEGO::Handler::render()
 		block->Draw(DD);
 	}
 
-	//no need to render UI and holding obj in driving mode
+	UI->render(DD2D);
+	
+	//no need to render the holding obj in driving mode
 	if(!driving_mode)
 	{
 		holding_obj->Draw(DD);
-		UI->render(DD2D);
 	}
 	
 	//Renders the debug nodes
@@ -447,7 +452,7 @@ void LEGO::Handler::loadFromPath(const std::string& path)
  * \brief Given a path to a JSON file, saves a vehicle in it 
  * \param path file path as string
  */
-void LEGO::Handler::saveToPath(const std::string& path)
+void LEGO::Handler::saveToPath(const std::string& path) const
 {
 	//Creates a virtual JSON file 
 	json jsonfile;

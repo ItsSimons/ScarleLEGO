@@ -14,7 +14,9 @@ public:
 	//Getters & Setters
 	void setText(const std::string _string);
 	void setBgColor(float* color);
+	void setBgSize(const Vector2& new_size) const;
 	void setTextColor(float* color);
+	void setTextSize(const Vector2& new_size) const;
 	void setPos(const Vector2& new_pos) override;
 	const Vector2& getPos() override;
 	const Vector2& getRes() override;

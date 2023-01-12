@@ -71,6 +71,14 @@ void UIText::setBgColor(float* color)
 }
 
 /**
+ * \param new_size New scale of the text background  
+ */
+void UIText::setBgSize(const Vector2& new_size) const
+{
+    button_bg->SetScale(new_size);
+}
+
+/**
  * \brief Takes a new color type punned as a float for the Text
  * \param color float value of color
  */
@@ -78,6 +86,14 @@ void UIText::setTextColor(float* color)
 {
     current_text_color = color;
     button_text->SetColour(Color(current_bg_color));
+}
+
+/**
+ * \param new_size new scale of text
+ */
+void UIText::setTextSize(const Vector2& new_size) const
+{
+    button_text->SetScale(new_size);
 }
 
 /**

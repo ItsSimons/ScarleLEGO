@@ -68,7 +68,7 @@ namespace LEGO
 		
 		//Load & Saving
 		void loadFromPath(const std::string& path);
-		void saveToPath(const std::string& path);
+		void saveToPath(const std::string& path) const;
 		
 		//Placing, collisions & removing
 		void isBlockPlaceable();

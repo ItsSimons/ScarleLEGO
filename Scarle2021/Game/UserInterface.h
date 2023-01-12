@@ -38,11 +38,21 @@ private:
     Vector2 cursor_scale = {0,0};
     Vector2 cursor_res = {0,0};
     float cursor_speed = 3.f;
-    //Indicator
-    UIText* indicator = nullptr;
-    //Placeable feedback
-    UIText* placing_feedback = nullptr;
-    
+
+    //to find text easily in the text vector 
+    enum ui_text_index
+    {
+        id_indicator,
+        id_placing_feedback,
+        id_ui_controls1,
+        id_ui_controls2,
+        id_ui_controls3,
+        id_ui_controls4,
+        id_driving_controls1,
+        id_driving_controls2
+    };
+
+    std::vector<UIText*> text_UI{};
     std::vector<BlockButton*> block_buttons_UI{};
     std::vector<LoadSaveButton*> save_points_UI{};
 };

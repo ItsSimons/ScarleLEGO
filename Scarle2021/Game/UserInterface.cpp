@@ -9,9 +9,11 @@ UserInterface::~UserInterface()
 {
     delete background_UI;
     delete cursor;
-    delete indicator;
-    delete placing_feedback;
-    
+
+    for (auto text : text_UI)
+    {
+        delete text;        
+    }
     for (auto button : block_buttons_UI)
     {
         delete button;
@@ -44,10 +46,52 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
     background_UI->SetPos(game_res / 2);
 
     //Block indicator, defaults to cube
-    indicator = new UIText("Current: Cube", Vector2(0, game_res.y - 64.f), _d3dDevice);
+    UIText* indicator_local = new UIText("Current: Cube", Vector2(0, game_res.y - 64.f), _d3dDevice);
+    text_UI.push_back(indicator_local);
     //Shows if a block is placeable or not
-    placing_feedback = new UIText("Not Placeable", Vector2(0, game_res.y - 128.f), _d3dDevice);
-    placing_feedback->setBgColor((float*)&Colors::Red);
+    UIText* placing_feedback_local = new UIText("Not Placeable", Vector2(0, game_res.y - 128.f), _d3dDevice);
+    placing_feedback_local->setBgColor((float*)&Colors::Red);
+    text_UI.push_back(placing_feedback_local);
+
+    //User Controls UI
+    //Block movement 
+    UIText* ui_controls1 = new UIText("Move Block: W-A-S-D, Up/Down: Q-E",
+        Vector2(game_res.x - 400, 0), _d3dDevice);
+    ui_controls1->setTextSize(Vector2(0.5f, 0.5f));
+    ui_controls1->setBgSize(Vector2(17.f, 0.5f));
+    text_UI.push_back(ui_controls1);
+    //Placing deleting and UI
+    UIText* ui_controls2 = new UIText("Place: Space, Delete: Backspace, UI: TAB",
+        Vector2(game_res.x - 400.f, 32.f), _d3dDevice);
+    ui_controls2->setTextSize(Vector2(0.5f, 0.5f));
+    ui_controls2->setBgSize(Vector2(17.f, 0.5f));
+    text_UI.push_back(ui_controls2);
+    //Block rotation
+    UIText* ui_controls3 = new UIText("Rotate Yaw: R, Rotate Pitch: T",
+        Vector2(game_res.x - 400.f, 64.f), _d3dDevice);
+    ui_controls3->setTextSize(Vector2(0.5f, 0.5f));
+    ui_controls3->setBgSize(Vector2(17.f, 0.5f));
+    text_UI.push_back(ui_controls3);
+    //Build and drive 
+    UIText* ui_controls4 = new UIText("Build and Drive: Enter",
+        Vector2(game_res.x - 400.f, 96.f), _d3dDevice);
+    ui_controls4->setTextSize(Vector2(0.5f, 0.5f));
+    ui_controls4->setBgSize(Vector2(17.f, 0.5f));
+    text_UI.push_back(ui_controls4);
+
+    //User Controls Driving
+    //Movement WASD
+    UIText* driving_controls1 = new UIText("Move Vehicle: W-A-S-D",
+        Vector2(game_res.x - 400.f, 0.f), _d3dDevice);
+    driving_controls1->setTextSize(Vector2(0.5f, 0.5f));
+    driving_controls1->setBgSize(Vector2(17.f, 0.5f));
+    text_UI.push_back(driving_controls1);
+    //Movement CTRL SPACE 
+    UIText* driving_controls2 = new UIText("Up and Down: SPACE-CTRL",
+        Vector2(game_res.x - 400.f, 32.f), _d3dDevice);
+    driving_controls2->setTextSize(Vector2(0.5f, 0.5f));
+    driving_controls2->setBgSize(Vector2(17.f, 0.5f));
+    text_UI.push_back(driving_controls2);
     
     //Iterates through the enums of blocks and creates and UI entry for each one of those, if not blacklisted
     //This to load new elements directly from the block index file
@@ -137,10 +181,11 @@ void UserInterface::update(GameData* _GD)
     background_UI->Tick(_GD);
     cursor->SetPos(mouse_pos);
     cursor->Tick(_GD);
-    indicator->update(_GD, mouse_pos);
-    placing_feedback->update(_GD, mouse_pos);
     
-    
+    for (const auto text : text_UI)
+    {
+        text->update(_GD, mouse_pos);
+    }
     for (const auto button : block_buttons_UI)
     {
         button->update(_GD, mouse_pos);
@@ -156,10 +201,20 @@ void UserInterface::render(DrawData2D* _DD2D)
 {
     if(!visible)
     {
+        //Renders only some specific UI elements, depending if in driving mode or not
         if(!driving)
         {
-            indicator->render(_DD2D);
-            placing_feedback->render(_DD2D);
+            for (int EnumInt = id_indicator; EnumInt != id_ui_controls4 + 1; EnumInt++)
+            {
+                text_UI[EnumInt]->render(_DD2D);
+            }
+        }
+        else
+        {
+            for (int EnumInt = id_driving_controls1; EnumInt != id_driving_controls2 + 1; EnumInt++)
+            {
+                text_UI[EnumInt]->render(_DD2D);
+            }
         }
         return;
     };
@@ -174,7 +229,8 @@ void UserInterface::render(DrawData2D* _DD2D)
     {
         save_point->render(_DD2D);
     }
-    
+
+    //This for last as it needs to be in front of everything 
     cursor->Draw(_DD2D);
 }
 
@@ -186,22 +242,24 @@ void UserInterface::render(DrawData2D* _DD2D)
  */
 void UserInterface::setPlaceable(bool _placeable, bool _placed) const
 {
+    auto* text_ptr = text_UI[id_placing_feedback];
+    
     if(_placed)
     {
-        placing_feedback->setText("Placed");
-        placing_feedback->setBgColor((float*)&Colors::White);
+        text_ptr->setText("Placed");
+        text_ptr->setBgColor((float*)&Colors::White);
         return;
     }
     
     if(_placeable)
     {
-        placing_feedback->setText("Placeable");
-        placing_feedback->setBgColor((float*)&Colors::Green);
+        text_ptr->setText("Placeable");
+        text_ptr->setBgColor((float*)&Colors::Green);
     }
     else
     {
-        placing_feedback->setText("Not Placeable");
-        placing_feedback->setBgColor((float*)&Colors::Red);
+        text_ptr->setText("Not Placeable");
+        text_ptr->setBgColor((float*)&Colors::Red);
     }
 }
 
@@ -250,7 +308,7 @@ const BlockIndex& UserInterface::getSelectionBlockID()
             const std::string current_block_name = "Current: " + BlockHelper::GetBlockName(return_id); 
 
             //Renames indicator
-            indicator->setText(current_block_name);
+            text_UI[id_indicator]->setText(current_block_name);
             return return_id;
         }
     }
