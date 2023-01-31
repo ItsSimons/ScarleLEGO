@@ -16,10 +16,10 @@ LoadSaveButton::LoadSaveButton(const std::string& json_path, const Vector2& bt_p
     load_bg->SetScale(bt_scale);
     //Finds out pos 
     load_res = Vector2(load_bg->GetRes().x * bt_scale.x, load_bg->GetRes().y);
-    load_pos = bt_pos - load_res/2 + offset;
+    load_pos = bt_pos - load_res * 0.5f + offset;
     load_bg->SetPos(load_pos);
     //Load button text
-    load_text = new TextGO2D(" Load");
+    load_text = new TextGO2D("  Load");
     load_text->SetColour(Color((float*)&Colors::Black));
     load_text->SetPos(load_pos);
 
@@ -32,7 +32,7 @@ LoadSaveButton::LoadSaveButton(const std::string& json_path, const Vector2& bt_p
     save_pos = bt_pos - save_res/2 - offset;
     save_bg->SetPos(save_pos);
     //Save button text
-    save_text = new TextGO2D(" Save");
+    save_text = new TextGO2D("  Save");
     save_text->SetColour(Color((float*)&Colors::Black));
     save_text->SetPos(save_pos);
 }
@@ -67,6 +67,7 @@ void LoadSaveButton::update(GameData* _GD, const Vector2& mouse_pos)
             load_bg->SetColour(Color((float*)&Colors::White));
             inside_load = false;
             loaded = false;
+            setLoadText("  Load");
             break;
             
         case bt_red:
@@ -95,6 +96,7 @@ void LoadSaveButton::update(GameData* _GD, const Vector2& mouse_pos)
             save_bg->SetColour(Color((float*)&Colors::White));
             inside_save = false;
             saved = false;
+            setSaveText("  Save");
             break;
             
         case bt_red:
@@ -154,6 +156,29 @@ void LoadSaveButton::setPos(const Vector2& new_pos)
     save_text->SetPos(save_pos);
 }
 
+
+/**
+ * \brief Changes the text displayed in the load button
+ */
+void LoadSaveButton::setLoadText(const std::string& _string)
+{
+    delete load_text;
+    load_text = new TextGO2D(_string);
+    load_text->SetPos(load_pos);
+    load_text->SetColour(Color((float*)&Colors::Black));
+}
+
+/**
+ * \brief Changes the text displayed in the save button
+ */
+void LoadSaveButton::setSaveText(const std::string& _string)
+{
+    delete save_text;
+    save_text = new TextGO2D(_string);
+    save_text->SetPos(save_pos);
+    save_text->SetColour(Color((float*)&Colors::Black));
+}
+
 /**
  * \return Path of the JSON to save to
  */
@@ -162,6 +187,7 @@ std::string LoadSaveButton::getSavePath()
     if(inside_save && !saved)
     {
         saved = true;
+        setSaveText(" Saved");
         return filepath;
     }
     return "null";
@@ -175,6 +201,7 @@ std::string LoadSaveButton::getLoadPath()
     if(inside_load && !loaded)
     {
         loaded = true;
+        setLoadText("Loaded");
         return filepath;
     }
     return "null";

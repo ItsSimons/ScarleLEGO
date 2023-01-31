@@ -43,6 +43,7 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
 
     //background
     background_UI = new ImageGO2D("background_UI", _d3dDevice);
+    background_UI->SetScale(Vector2( 1.02f, 1.0f));
     background_UI->SetPos(game_res / 2);
 
     //Block indicator, defaults to cube
@@ -114,7 +115,7 @@ void UserInterface::initialize(ID3D11Device* _d3dDevice, const Vector2& resoluti
     {
         int height_mul = i / 2;
         Vector2 new_pos = Vector2{
-            0,static_cast<float>(game_res.y * 0.22 + (block_buttons_UI[i]->getRes().y * 1.15f) * height_mul)};
+            0,static_cast<float>(game_res.y * 0.23 + (block_buttons_UI[i]->getRes().y * 1.15f) * height_mul)};
 
         //If I is even button will be placed in the column in the left
         if(i % 2 == 0)
@@ -293,6 +294,7 @@ void UserInterface::setDrivingMode(bool _driving)
  */
 const BlockIndex& UserInterface::getSelectionBlockID()
 {
+    //If the interface is visible do not return a BlockID
     if(!visible) return id_invalid;
     
     for (const auto button : block_buttons_UI)
@@ -329,8 +331,6 @@ std::string UserInterface::tryGetSavePath() const
 
         if(path != "null")
         {
-            //Does not close the UI when saving
-            std::cout << "Saved!" << std::endl;
             return path;
         }
     }
@@ -341,7 +341,7 @@ std::string UserInterface::tryGetSavePath() const
  * \brief Checks all the load buttons to see if one has been pressed.
  * \return Path of file to load from
  */
-std::string UserInterface::tryGetLoadPath() 
+std::string UserInterface::tryGetLoadPath() const
 {
     if(!visible) return "null";
     
@@ -351,7 +351,6 @@ std::string UserInterface::tryGetLoadPath()
 
         if(path != "null")
         {
-            toggleVisibilityUI();
             return path;
         }
     }

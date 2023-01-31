@@ -10,7 +10,7 @@ public:
         m_scale = Vector3{ 5.f, 5.f, 5.f };
         base_object_extents	= Vector3{ 9.f, 19.f, 19.f };
 
-        //Turning?
+        //Turning left and right
         base_forces[leftward_f] = Vector3(3250, 0, 0);
         base_forces[rightward_f] = Vector3(-3250, 0, 0);
         

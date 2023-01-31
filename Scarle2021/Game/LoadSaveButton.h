@@ -13,6 +13,8 @@ public:
 	
 	//Getters & setters
 	void setPos(const Vector2& new_pos);
+	void setLoadText(const std::string& _string);
+	void setSaveText(const std::string& _string);
 	std::string getSavePath();
 	std::string getLoadPath();
 	
@@ -27,7 +29,7 @@ private:
 	};
 	
 	//Scale and offset
-	const Vector2 bt_scale = {4.7f, 1.f};
+	const Vector2 bt_scale = {5.5f, 1.f};
 	const Vector2 offset = {80.f, 0};
 	//Load button
 	ImageGO2D* load_bg = nullptr;

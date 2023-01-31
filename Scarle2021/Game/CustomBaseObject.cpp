@@ -408,7 +408,7 @@ void CustomBaseObject::Tick(GameData* _GD)
 {
     if(created)
     {
-        //Gets position and rotation from the physic engine
+        //Gets position and rotation from the physic scene
         auto obj_pos = block_self->body->GetWorldPoint(position_offset);
         const auto& obj_rot= block_self->body->GetQuaternion();
         

@@ -55,6 +55,7 @@ void UIText::render(DrawData2D* _DD2D)
 void UIText::setText(const std::string _string)
 {
     //To change the string recreates the TextGO and sets back its properties
+    delete button_text;
     button_text = new TextGO2D(_string);
     button_text->SetPos(button_pos);
     button_text->SetColour(Color(current_text_color));

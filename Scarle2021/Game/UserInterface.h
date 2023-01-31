@@ -24,7 +24,7 @@ public:
     void setDrivingMode(bool _driving);
     const BlockIndex& getSelectionBlockID();
     std::string tryGetSavePath() const;
-    std::string tryGetLoadPath();
+    std::string tryGetLoadPath() const;
 
 private:
     Vector2 game_res = {0, 0};
